@@ -1,0 +1,14 @@
+\begin{tikzpicture}[aS,scale=0.9, every node/.style={scale=0.9}]  
+  	
+  	\startl{c_1};
+  	\specl{above}{c_1}{a_1};
+  	\link{a_1}{b_0};
+  	\edl{b_0};
+  	\specl{below}{c_1}{b_1};
+	\link{b_1}{a_0};
+  	\edl{a_0};
+    \path
+    	(a_0s) edge (a_1)
+        (b_0s) edge (b_1)
+    ;
+    \end{tikzpicture}

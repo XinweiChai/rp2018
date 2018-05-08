@@ -1,0 +1,15 @@
+\begin{tikzpicture}[aS, every node/.style={scale=0.7}]  
+  	
+	\startl{a_1};
+	\specl{above}{a_1}{b_1};
+	\specl{above}{b_1}{d_0};
+	\edl{d_0};
+	\link{b_1}{a_0};
+ 	\edl{a_0};
+	\link{a_1}{c_1};
+ 	\link{c_1}{d_1};
+ 	\link{d_1}{c_0};
+ 	\edl{c_0};
+ 	\specl{below}{c_1}{e_0};
+ 	\edl{e_0};
+    \end{tikzpicture}

@@ -1,0 +1,40 @@
+\begin{tikzpicture}[>=stealth,scale=0.6,line width=0.8pt]
+\scriptsize
+% % % % % % % % % % % % % % %
+ 
+\pgfmathsetmacro{\ticker}{0.125} 
+ 
+\coordinate [label=225:0](A) at (0,0);
+\coordinate (B) at (0,5);
+\coordinate (C) at (8.5,5);
+\coordinate (D) at (8.5,0);
+\draw(A)--(B)--(C)--(D)--cycle;
+ 
+\coordinate [label=left:{\scriptsize runtime(s)}](E) at ($(B)+(1,0.2)$);
+\coordinate [label=below:{\scriptsize components}](F) at ($(D)+(0,-0.2)$);
+ 
+\foreach \i/\texti in {10,30,...,70} {
+\draw (0.1*\i,0) --(0.1*\i,\ticker) node[label=below:\texti]{};
+}
+\foreach \i in {20,40,...,80} {
+\draw (0.1*\i,0) --(0.1*\i,\ticker);
+}
+
+\foreach \j/\textj  in {0.02,0.04,0.06,0.08} {
+\draw (0,50*\j) --(\ticker,50*\j) node[label=left:\textj]{};
+}
+
+
+\coordinate (1) at (1,6.8/8);
+\coordinate (2) at (2,8.5/8);
+\coordinate (3) at (3,10.76/8);
+\coordinate (4) at (4,14.38/8);
+\coordinate (5) at (5,13.68/8);
+\coordinate (6) at (6,14.62/8);
+\coordinate (7) at (7,16.8/8);
+\coordinate (8) at (8,35.8/8);
+\draw(1)--(2)--(3)--(4)--(5)--(6)--(7)--(8);
+ 
+ 
+ 
+\end{tikzpicture}

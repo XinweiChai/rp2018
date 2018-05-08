@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+
+\def \n {6}
+\def \radius {1.7cm}
+\def \margin {8} % margin in angles, depends on the radius
+
+
+
+\node[draw] at ({360/\n * 2}:\radius) (x) {$x$};
+\node[draw, circle, minimum size=6pt, inner sep = 0] at ({360/\n * 3}:\radius) {};
+\node[draw] at ({360/\n * 4}:\radius) (y) {$y$};
+\node[draw, circle, minimum size=6pt, inner sep = 0] at ({360/\n * 5}:\radius) {};
+\node[draw] at ({360/\n * 6}:\radius) (z) {$z$};
+\foreach \s in {3,...,\n}
+{
+  
+  \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius) 
+    arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
+}
+
+\node[left = 1.3cm of x, draw, circle, minimum size=6pt, inner sep = 0] (sol) {};
+\node[left = 1.3cm of sol, draw] (origin) {$a$};
+\draw[->, >=latex] (origin) to [bend left] (sol);
+\draw[->, >=latex] (sol) to [bend left] (x);
+
+\node[right = 1.3cm of z, draw, circle, minimum size=6pt, inner sep = 0] (solz) {};
+\node[right = 1.3cm of solz, draw] (ext) {$w$};
+\node[right = 1.3cm of ext] (etc) {$\cdots$};
+\draw[->, >=latex] (z) to [bend left] (solz);
+\draw[->, >=latex] (solz) to [bend left] (ext);
+\draw[->, >=latex] (ext) to [bend left] (etc);
+\end{tikzpicture}

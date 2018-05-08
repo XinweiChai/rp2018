@@ -1,0 +1,185 @@
+% procedure, abstractions and dependencies
+\newcommand{\abstr}[1]{#1^\wedge}%\text{\textasciicircum}}
+\def\BS{\mathbf{BSeq}}
+\def\aBS{\abstr{\BS}}
+\def\abeta{\abstr{\beta}}
+\def\aZ{\abstr{\zeta}}
+\def\aY{\abstr{\xi}}
+
+\def\beforeproc{\vartriangleleft}
+
+\def\powerset{\wp}
+
+\def\Sce{\mathbf{Sce}}
+\def\OS{\mathbf{OSeq}}
+\def\Obj{\mathbf{Obj}}
+%\def\Proc{\mathbf{Proc}}
+%\def\Sol{\mathbf{Sol}}
+\newcommand{\Sol}{\mathbf{Sol}}
+\newcommand{\NSol}{\Sol}
+\newcommand{\sSol}{\mathbf{Sync}}
+
+\usepackage{galois}
+\newcommand{\theOSabstr}{toOS}
+\newcommand{\OSabstr}[1]{\theOSabstr(#1)}
+\newcommand{\theOSconcr}{toSce}
+\newcommand{\OSconcr}[1]{\theOSconcr(#1)}
+
+% \def\gO{\mathbb{O}}
+% \def\gS{\mathbb{S}}
+\def\aS{\mathcal{A}}
+\def\Req{\mathrm{Req}}
+%\def\Sol{\mathrm{Sol}}
+\def\Cont{\mathrm{Cont}}
+\def\cBS{\BS_\ctx}
+\def\caBS{\aBS_\ctx}
+\def\caS{\aS_\ctx}
+\def\cSol{\Sol_\ctx}
+\def\cReq{\Req_\ctx}
+\def\cCont{\Cont_\ctx}
+
+\def\any{\star}
+
+% \def\gProc{\mathrm{maxPROC}}
+\def\mCtx{\mathrm{maxCtx}}
+
+%\def\procs{\f{procs}}
+\def\objs{\f{objs}}
+\def\sat#1{\lceil #1\rceil}
+
+\def\gCont{\f{maxCont}}
+\def\lCont{\f{minCont}}
+\def\lProc{\f{minProc}}
+\def\gProc{\f{maxProc}}
+
+\def\join{\oplus}
+\def\concat{\!::\!}
+\def\emptyseq{\varepsilon}
+\def\ltw{\preccurlyeq_{\OS}}
+\def\indexes#1{\mathbb{I}^{#1}}
+%\def\indexes#1{\{1..|#1|\}}
+\def\supp{\f{support}}
+\def\w{\omega}
+\def\W{\Omega}
+% \def\ctx{\varsigma}
+%\def\ctx{{\textcolor{green}{s}}}
+% \def\ctx{s}
+% \def\Ctx{\mathbf{Ctx}}
+\def\Ctx{\mathbf{Ctx}}
+\def\mconcr{\gamma}
+\def\concr{\mconcr_s}
+\def\obj#1#2{{#1\!\Rsh^*\!\!#2}}
+\def\objp#1#2#3{\obj{{#1}_{#2}}{{#1}_{#3}}}
+\def\A{\mathcal{A}}
+\def\cwA{\A_\ctx^\w}
+\def\cwReq{\Req_\ctx^\w}
+\def\cwSol{\Sol_\ctx^\w}
+\def\cwCont{\Cont_\ctx^\w}
+\def\gCtx{\f{maxCtx}}
+\def\endCtx{\f{endCtx}}
+\def\ceil{\f{end}}
+
+%\def\lfp{\mathrm{lfp}\;}
+%\def\mlfp#1{\mathrm{lfp}\{#1\}\;}
+\newcommand{\lfp}[3]{\mathbf{lfp}\{#1\}\left(#2\mapsto#3\right)}
+\def\maxobjs{{\f{maxobjs}}}
+\def\maxprocs{{\f{maxprocs}_\ctx}}
+\def\objends{{\f{ends}}}
+
+\def\ra{\rho}
+\def\rb{\rho^\wedge}
+\def\rc{\widetilde{\rho}}
+\def\interleave{\f{interleave}}
+
+\def\join{\concat}
+
+\tikzstyle{aS}=[every edge/.style={draw,->,>=stealth}]
+\tikzstyle{Asol}=[draw,circle,minimum size=5pt,inner sep=0,node distance=1cm]
+\tikzstyle{Aproc}=[draw,node distance=1cm]
+\tikzstyle{Aobj}=[node distance=1.5cm]
+\tikzstyle{Anos}=[font=\Large]
+\tikzstyle{Assol}=[node distance=1.2cm]
+%\tikzstyle{AprocPrio}=[Aproc,double]
+\tikzstyle{AsolPrio}=[Asol,double]
+\tikzstyle{AprocPrio}=[Aproc,double]
+\tikzstyle{aSPrio}=[aS,double]
+
+
+\newcommand{\startl}[1]{\node[Aproc] (#1) {$#1$};\node[Asol,right of=#1] (#1s) {};\path (#1) edge (#1s);}%start link
+\newcommand{\link}[2]{\node[Aproc,right of=#1s] (#2) {$#2$};\node[Asol,right of=#2] (#2s) {};\path (#1s) edge (#2) (#2) edge (#2s);} %normal link
+\newcommand{\specl}[3]{\node[Aproc,#1 right of=#2s] (#3) {$#3$};\node[Asol,right of=#3] (#3s) {};\path (#2s) edge (#3) (#3) edge (#3s);} %special link
+\newcommand{\edl}[2]{\node[Assol,right of=#1s] (#1st){$\varnothing$};\path (#1s) edge (#1st);}%end link
+
+
+%\def\procs{\mathsf{procs}}
+%\def\allprocs{\mathsf{allProcs}}
+%\def\allprocs{\procs}
+%\def\pfp{\mathsf{pfp}}
+\def\pfp{\mathsf{focals}^1}
+\def\pfpprocs{\mathsf{pfpProcs}}
+\def\bounceprocs{\mathsf{bounceProcs}}
+\def\newprocs{\mathsf{newProcs}}
+
+\def\aB{\mathcal{B}}
+\def\sat#1{{#1}}
+%\def\sat#1{\lceil #1\rceil}
+\newcommand{\thisB}[2]{\sat{\aB_{#2}^{#1}}}
+\newcommand{\myp}{u}
+%\def\cwB{\thisB{\myp}{\ctx}}
+\def\cwB{\thisB{\myp}{s}}
+%\def\cwB{\sat{\aB_\ctx^\w}}
+%\def\cwBz{\thisB{\myp}{\ctx_0}}
+\def\cwBz{\thisB{\myp}{s_0}}
+\def\mycwB#1#2{\sat{\aB_{#1}^{#2}}}
+\def\Bsol{\sat{\Sol^\w_\ctx}}
+\def\Breq{\sat{\Req^\w_\ctx}}
+\def\Bcont{\sat{\Cont^\w_\ctx}}
+
+\def\myB{\aB^\myp_\ctx}
+\def\mysol{\overline{\Sol^\w_\ctx}}
+\def\myreq{\overline{\Req^\w_\ctx}}
+\def\mycont{\overline{\Cont^\w_\ctx}}
+
+\newcommand{\csState}{\mathsf{procState}}
+
+\newcommand{\V}{V}
+\newcommand{\E}{E}
+\newcommand{\cwV}{\V_s^\myp}
+\newcommand{\cwE}{\E_s^\myp}
+% \newcommand{\cwV}{\V_\ctx^\myp}
+% \newcommand{\cwE}{\E_\ctx^\myp}
+%\newcommand{\VProc}{\textcolor{red}{\V_\PHproc}}
+%\newcommand{\VObj}{\textcolor{red}{\V_\Obj}}
+%\newcommand{\VSol}{\V_{Sol}}
+%\newcommand{\VSol}{\textcolor{red}{\V_{\Sol}}}
+\newcommand{\VProc}{\V \cap \PHproc}
+\newcommand{\VObj}{\V \cap \Obj}
+\newcommand{\VSol}{\V \cap \Sol}
+\newcommand{\cwVProc}{\cwV \cap \PHproc}
+\newcommand{\cwVObj}{\cwV \cap \Obj}
+\newcommand{\cwVSol}{\cwV \cap \Sol}
+\newcommand{\cwVsSol}{\cwV \cap \sSol}
+
+\def\Bv{\sat{\cwV}}
+\def\Be{\sat{\cwE}}
+\def\BvProc{\textcolor{red}{\sat{\cwV}^\PHproc}}
+\def\BvObj{\textcolor{red}{\sat{\cwV}^\Obj}}
+%\def\BvSol{\sat{\cwV}^{Sol}}
+\def\BvSol{\textcolor{red}{\sat{\cwV}^{\Sol}}}
+
+\def\cwBNodes{\Bv}
+\def\cwBEdges{\Be}
+\def\nsol{\f{nsol}}
+\def\conn{\f{conn}}
+
+\newcommand{\Bee}[2]{\Be^{#1}_{#2}}
+
+%\def\mlfp#1{\f{pppf}\{#1\}}
+
+\def\PHobjp#1#2#3{\PHobj{{#1}_{#2}}{{#1}_{#3}}}
+\def\Obj{\mathbf{Obj}}
+\def\powerset{\wp}
+\def\gCont{\f{maxCont}}
+
+\def\muconcr{\ell}
+\def\uconcr{\muconcr_\ctx}

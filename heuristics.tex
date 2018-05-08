@@ -1,0 +1,70 @@
+\begin{tikzpicture}[level/.style={sibling distance=70mm/#1},scale=0.5]
+\node [circle,draw] (z){$t$}
+  child {node [circle,draw,fill=gray] (a) {}
+    child {node [circle,draw,fill=gray] (b) {}
+      child {node {$\vdots$}
+        child {node [circle,draw] (d) {}}
+        child {node [circle,draw,fill=gray] (e) {}}
+      } 
+      child {node {$\vdots$}}
+    }
+    child {node [circle,draw] (g) {}
+      child {node {$\vdots$}}
+      child {node (mid) {$\vdots$}}
+    }
+  }
+  child {node [circle,draw] (j) {}
+    child {node [circle,draw] (k) {}
+      child {node {$\vdots$}}
+      child {node {$\vdots$}}
+    }
+  child {node [circle,draw] (l) {}
+    child {node {$\vdots$}}
+    child {node (c){$\vdots$}
+      child {node [circle,draw] (o) {}}
+      child {node [circle,draw] (p) {}
+        child [grow=right] {node (q) {} edge from parent[draw=none]
+          child [grow=right] {node (q) {} edge from parent[draw=none]
+            child [grow=up] {node (r) {} edge from parent[draw=none]
+              child [grow=up] {node (s) {} edge from parent[draw=none]
+                child [grow=up] {node (t) {} edge from parent[draw=none]
+                  child [grow=up] {node (u) {} edge from parent[draw=none]}
+                }
+              }
+            }
+            child [grow=down] {node (v) {}edge from parent[draw=none]}
+          }
+        }
+      }
+    }
+  }
+};
+\node [right = 2.3cm of e] (point){$\cdots$};
+\path (a) -- (j) node [midway] {};
+\path (b) -- (g) node [midway] {};
+\path (k) -- (l) node [midway] {};
+\path (k) -- (g) node [midway] {};
+\path (d) -- (e) node [midway] {};
+\path (o) -- (p) node [midway] {};
+\path (o) -- (e) node (x) [midway] {}
+  child [grow=down] {
+    node (y) {}
+    edge from parent[draw=none]
+  };
+\path (q) -- (r) node [midway] {};
+\path (s) -- (r) node [midway] {};
+\path (s) -- (t) node [midway] {};
+\path (s) -- (l) node [midway] {};
+\path (t) -- (u) node [midway] {};
+\path (z) -- (u) node [midway] {};
+\path (j) -- (t) node [midway] {};
+\path (y) -- (x) node [midway] {};
+\path (v) -- (y)
+  node (w) [midway] {};
+\path (q) -- (v) node [midway] {};
+\path (e) -- (x) node [midway] {};
+\path (o) -- (x) node [midway] {};
+\path (y) -- (w) node [midway] {};
+\path (v) -- (w) node [midway] {};
+\path (r) -- (c) node [midway] {};
+\end{tikzpicture}
