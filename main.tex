@@ -28,7 +28,7 @@
 
 \begin{document}
 %
-\title{A Heuristic for Reachability Problem in Asynchronous Binary Automata Networks\thanks{Supported by organization x.}}
+\title{A Heuristic for Reachability Problem in Asynchronous Binary Automata Networks\thanks{Supported by Laboratoire des Sciences du Num\'erique de Nantes and China Scholarship Council}}
 %
 \titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
@@ -54,7 +54,7 @@ However, this technique may be not conclusive. Our contribution here is to exten
 To validate our method, tests were conducted in large biological networks, showing that our method is more conclusive than existing ones.
 \cite{marx2013}
 
-\keywords{Asynchronous Binary Automata Networks \and Local Causality Graph \and heuristic.}
+\keywords{Asynchronous Binary Automata Networks \and Local Causality Graph \and Heuristic.}
 \end{abstract}
 
 \section{Introduction}
@@ -136,7 +136,7 @@ An ABAN is a triplet $AB = (\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, where:
 \begin{itemize}
 \item $\mathbf{\Sigma}\triangleq\{a,b,\ldots,z\}$ is the finite set of automata with every component having a Boolean state;
 \item $L_a\triangleq\{a_0,a_1\}$ is the set of binary states of automaton $a\in \mathbf{\Sigma}$, $\mathbf{LS}=\underset{a\in \mathbf{\Sigma}}{\cup} L_a$ is the set of all local states, and $\mathbf{L}\triangleq \underset{a\in \mathbf{\Sigma}}{\times} L_a$ is the set of global states, the state of automaton a at state s is denoted $s[a]=a_i$;
-\item $\mathbf{T}\triangleq \{A\rightarrow b_i\mid b\in \mathbf{\Sigma} \land A\in \mathbf{L}\}$ is the set of transitions, where $A$ is the required state(s) for the transition, which allows to flip $b_i$ to the other Boolean state. In other words, transition $tr=\acm{A}{b_j}{b_k}$ is said firable iff $A\subseteq s$.%, denoted by $reach(tr)=1$. 
+\item $\mathbf{T}\triangleq \{A\rightarrow b_i\mid b\in \mathbf{\Sigma} \land A\in \mathbf{L}\}$ is the set of transitions, where $A$ is the set of required states for the transition, which allows to flip $b_i$ to the other Boolean state. In other words, transition $tr=\acm{A}{b_j}{b_k}$ is said firable iff $A\subseteq s$.
 \end{itemize}
 \end{definition}
 
