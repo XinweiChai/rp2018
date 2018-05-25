@@ -1,46 +1,6 @@
-Reviewer #1: Summary:
-=======
-
-This paper addresses the verification problem for the class of Asynchronous Binary Automata Networks (ABAN). Roughly speaking, an ABAN consists of a collection of finite state automata where each automaton has exactly two states. A transition t of an ABAN is of the form S—> b where A is a set of states (at most one per automaton) and b is a state of an automaton. The transition t is enabled if: (1) there is an automaton B whose current state is b, and  (2) for each state c in S, there is an automaton whose current state is c. If the transition t is enabled then it can be fired and results in changing the state of the automaton B from b to its other state. The authors claim (or believe) that checking the (state) reachability is EXPSPACE-hard and therefore they try to design efficient (over)-approximation techniques. The proposed over-approximation technique by the authors can be seen as an extension of the technique proposed in [19] and is based on the construction of a kind
-of a causality graph. A node in this graph corresponds to either a state of one of the automata or a transition. This graph is constructed in a backward manner from the target state (i.e., the desired state to reach). From a node labeled by a state b, an edge is added to each node of the graph labeled by a transition of the form S —> b' where b and b' are the two different states of an automaton of the ABAN (i.e., this corresponds to the fact that the state b can be reached by firing the transition S —> b'). From a node labeled by a transition of the form S —> b', an edge is added from that node to any node in the graph labeled by a state appearing in S (i.e., this corresponds to the fact that firing the transition S —> b' requires that the set S is a subset of the set of states appearing in the current configuration of the ABAN). In general checking, the state reachability problem in the constructed causality graph over-approximates the its corresponding problem for the
-ABAN. Therefore, the authors propose several heuristics to increase the precision of the causality graph. These heuristics concern: (1)  how to preprocess and remove cycles that appear in the causality graph, (2) how to check the reachability of a transition of the form S —> b'  by guessing the order in which the states, appearing in S, will be reached, and (3) the use of a decision tree.
-
-Finally, the authors have implemented their techniques in a prototype and conducted experiments on two examples. The experimental results show that the proposed method is more precise than the one used in [20] for one of the two examples; however, the reported running times are not as good as the ones obtained by the tool used in [20].
-
-Evaluation:
-========
-
-This paper addresses an important problem. The paper is not difficult to read and some parts of the paper can be improved. The presented results are interesting but, at the same time, they seem to be incremental (compared to [19]). The experimental results are not very conclusive with respect to the effectiveness of the proposed heuristics and the authors should run their prototype on more examples. I think the paper, as it is, is not ready for publication and it can be improved a lot by taking into account the following remarks/comments:
-
 - Introduction: The reachability problem for Petri nets is EXPSPACE-hard and it is a result of Lipton (R. J. Lipton. The reachability problem requires exponential space. Technical Report 62, Dep. Comput. Sci., Yale Univ., Jan. 1976.). However, I believe that  ABAN can be modeled using a subclass of Petri nets which is safe-Petri nets (for which the reachability problem is PSPACE-complete). Therefore, it is important that the authors consider comparing their work with exiting works on designing efficient techniques for safe-Petri nets (e.g.,  unfolding). 
 
-
-- Definition 1, third item:  "A" should be a set of states and not a member of the set of global states.
-
-- Definition 2: The notion of firing a transition should be made more formal.
-
-- Page 3, first column / line 52: The meaning of global verification is not clear.
-
-- Page 2, second column / line 27: Appendix C presents a transformation from BNs to ABANs and not from BNs to ANs.
-
-- Page 3, first column /line 30: The meaning of "as to the reachability problem" is not clear.
-
-- Definition 3 is unclear. For instance, \omega can not be a subset of the set of vertices. The set of solutions was never defined before. Why any vertex labeled by a local state should appear in the initial state… 
-I was  able to get the main idea from the Algorithm 2. So, perhaps it is better to replace the  Definition 3 by the Algorithm 2. 
-
--Page 4, second column, third example:  It is not clear why we have the edge going to a_1 from a_0 and also the edge from b_0 to b_1.
-
-- Page 5, first column: The paragraph after the proof of Theorem 1 should be part of the proof.
-
-- Page 5, second column: The set  "I" was not previously defined.
-
-- Page 5, second column: It is not clear how the bounds have been chosen. I think it is important to move Appendix C to the main text otherwise the beginning of Section 4 is not clear at all.
-
-- Proof of Theorem 2: The equivalence between reach(b_j.next) and reach(b_j.next.next) does not hold in general. This equivalence should be formally established. Also, using reach' instead of reach is more appropriate here (the same for Lemma 1 and some parts of Section 4.2).
-
 - Page 6, first column: It is totally unclear how Lemma 1 can be used to get rid of the cycles. Some edges of a cycle can belong to other paths in the graph and removing them will lead to the non-consideration of these other paths.
-
-- Page 6, second column: It is not clear what does it mean "cycles do not persist".
 
 - Definition 5: The sequential reachability should be defined formally. When we have reach(ls_1):: …::reach(ls_n) does it mean that the state ls_n is also reachable when ls_1 is reachable? 
 
@@ -48,24 +8,13 @@ I was  able to get the main idea from the Algorithm 2. So, perhaps it is better 
 
 - Proof of Theorem 3: Why "every local state in SLGC is mandatory to be reached"? Why perm (Ls)? The proof should be made more clear and also the assumptions under which the Theorem 3 holds.
 
-- Page 7, second column, line 46: what does it mean to transform AND gates into equivalent solution nodes?
-
-- Page 7, second column, line 56: what does it mean objective reachability?
-
 - Section 4.3 should be made clearer. How the decision tree is constructed. How is it used to guide the search?
-
-- Theorem 4 is very strange since it establishes some equivalence between the decision of the reachability problem with some probability result concerning the Random Walks problem.
-
-- Page 8, second column. It would be better if other words than "decidable" or decidability" being used.
-
-- Page 8, second column: The experimental results concerning "phase \lambda-model" should be also included in the table.
 
 Typos:
 =====
 
 There are many grammatical mistakes. Below, I list some of them:
 
-- Line 54 / Second column: "of automaton"— > "of the automaton"
 - Page 2, second column: The first and second sentences should be reformulated.
 - Page 3, second column/line 50: "E" should be replaced by the set of edges of SCLG.
 - Page 3, second column/ line 53: "form" —> "from"
@@ -77,15 +26,6 @@ There are many grammatical mistakes. Below, I list some of them:
 - Page 5, first column, line 50: "b_i" —> "b_j"
 - Page 5, second column, line 24: "of reachability" —> "of the reachability"
 - Page 6, second column, line 34: The node a_1 is not a fork state.
-
-
-
-
-
-Reviewer #2: The paper proposes an algorithm for reachability in Boolean Networks. The
-technical parts are deeply flawed, with vague definitions and handwaving
-proofs. I will just list some problems that one can actually nail down in
-Sections 2 and 3:
 
 - Defintion 1: If I take the part on \Sigma literally, all ABAN have exactly
   26 automata. More importantly, transitions are defined as A -> b, where A
@@ -128,10 +68,7 @@ Some minor remarks:
 - Section 2 should start with proper sentences, introducing /\ and \/ is
   unnecessary, the state change symbol is never used.
 
-- The graphical notation of ABAN should be explained. Also, maybe this is an
-  accepted convention, but I find the notation A -> b highly confusing, as
-  the new state is not b but its negation.
-
+- The graphical notation of ABAN should be explained. 
 - The paper promises to improve on LCG but never introduces them. This does
   not permit the reader to understand what difference the present paper
   proposes.
