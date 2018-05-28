@@ -1,36 +1,17 @@
-- Introduction: The reachability problem for Petri nets is EXPSPACE-hard and it is a result of Lipton (R. J. Lipton. The reachability problem requires exponential space. Technical Report 62, Dep. Comput. Sci., Yale Univ., Jan. 1976.). However, I believe that  ABAN can be modeled using a subclass of Petri nets which is safe-Petri nets (for which the reachability problem is PSPACE-complete). Therefore, it is important that the authors consider comparing their work with exiting works on designing efficient techniques for safe-Petri nets (e.g.,  unfolding). 
-
-- Page 6, first column: It is totally unclear how Lemma 1 can be used to get rid of the cycles. Some edges of a cycle can belong to other paths in the graph and removing them will lead to the non-consideration of these other paths.
-
 - Definition 5: The sequential reachability should be defined formally. When we have reach(ls_1):: …::reach(ls_n) does it mean that the state ls_n is also reachable when ls_1 is reachable? 
-
-- Theorem 3: What does it mean quasi-equivalence? The indexation of the disjunction would be over all possible permutations. 
 
 - Proof of Theorem 3: Why "every local state in SLGC is mandatory to be reached"? Why perm (Ls)? The proof should be made more clear and also the assumptions under which the Theorem 3 holds.
 
 - Section 4.3 should be made clearer. How the decision tree is constructed. How is it used to guide the search?
-
-Typos:
-=====
-
-There are many grammatical mistakes. Below, I list some of them:
 
 - Page 2, second column: The first and second sentences should be reformulated.
 - Page 3, second column/line 50: "E" should be replaced by the set of edges of SCLG.
 - Page 3, second column/ line 53: "form" —> "from"
 - Page 4, first column/line 18: "is in initial state" —> "d_0 appears in the initial state"
 - Page 4, first column, line 35: "to reason the" —> "to reason about"
-- Page 4, second column, line 9: "\omega=a_1" —> "\omega=c_1"
-- Page 4, second column, line 27: "\omega=a_1" —> "\omega=c_1"
 - Page 4, second column, line 50: "AN" —> "ABAN"
 - Page 5, first column, line 50: "b_i" —> "b_j"
-- Page 5, second column, line 24: "of reachability" —> "of the reachability"
 - Page 6, second column, line 34: The node a_1 is not a fork state.
-
-- Defintion 1: If I take the part on \Sigma literally, all ABAN have exactly
-  26 automata. More importantly, transitions are defined as A -> b, where A
-  is a global state. That is in contradiction to all the examples, where A
-  is a partial state. Also, \eqdef should read \subseteq for T.
 
 - Definition 3: Since \omega is a local state, w\subseteq... should read w\in...
   According to the second equation, only members of the initial state \varsigma
@@ -52,30 +33,9 @@ There are many grammatical mistakes. Below, I list some of them:
   call, preventing the recursion from going deeper than level two, and weirdly
   delta is prepended to the recursive result that already contains it.)
 
-I stopped reading in detail after this point, but I'm deeply sceptical about
-the approach taken in Section 4, which amounts to eliminating the cycles.
-It is easy to emulate a binary counter with an ABAN, where the least significant
-bit has to go back and forth between its local states. That's a cycle in the
-authors' terms, but it cannot be eliminated and has to be repeated many times
-in order to make a higher-significance bit change its state.
-
 So it seems that the whole approach is flawed. Maybe it would become clearer
 with proper definitions and proofs, or possibly it is meant to hold only for
 restricted cases, but for the moment that's not clear at all.
-
-Some minor remarks:
-
-- Section 2 should start with proper sentences, introducing /\ and \/ is
-  unnecessary, the state change symbol is never used.
-
-- The graphical notation of ABAN should be explained. 
-- The paper promises to improve on LCG but never introduces them. This does
-  not permit the reader to understand what difference the present paper
-  proposes.
-
-- Page 4, Example 2: \omega should be c1, not a1. Same in Example 3.
-  In the latter, the text says that a0 and b0 are both reachable but
-  not simultaneously. They are both initial local states!
 
 - Algorithm 1 does not tell us how it finds the right solution node from a
   given state node when there are several. (At least I suppose there can be
