@@ -6,9 +6,6 @@
 
 - Page 2, second column: The first and second sentences should be reformulated.
 - Page 3, second column/line 50: "E" should be replaced by the set of edges of SCLG.
-- Page 3, second column/ line 53: "form" —> "from"
-- Page 4, first column/line 18: "is in initial state" —> "d_0 appears in the initial state"
-- Page 4, first column, line 35: "to reason the" —> "to reason about"
 - Page 4, second column, line 50: "AN" —> "ABAN"
 - Page 5, first column, line 50: "b_i" —> "b_j"
 - Page 6, second column, line 34: The node a_1 is not a fork state.
@@ -32,10 +29,6 @@
   come up with ABC but returns CBC. (bi is added to visited before the recursive
   call, preventing the recursion from going deeper than level two, and weirdly
   delta is prepended to the recursive result that already contains it.)
-
-So it seems that the whole approach is flawed. Maybe it would become clearer
-with proper definitions and proofs, or possibly it is meant to hold only for
-restricted cases, but for the moment that's not clear at all.
 
 - Algorithm 1 does not tell us how it finds the right solution node from a
   given state node when there are several. (At least I suppose there can be
