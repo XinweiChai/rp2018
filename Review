@@ -1,7 +1,0 @@
-- Definition 5: The sequential reachability should be defined formally. When we have reach(ls_1):: …::reach(ls_n) does it mean that the state ls_n is also reachable when ls_1 is reachable? 
-
-- Proof of Theorem 3: Why "every local state in SLGC is mandatory to be reached"? Why perm (Ls)? The proof should be made more clear and also the assumptions under which the Theorem 3 holds.
-
-- Section 4.3 should be made clearer. How the decision tree is constructed. How is it used to guide the search?
-
-- Page 2, second column: The first and second sentences should be reformulated.
