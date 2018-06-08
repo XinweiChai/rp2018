@@ -30,11 +30,11 @@
 %
 \title{A Heuristic for Reachability Problem in Asynchronous Binary Automata Networks\thanks{Supported by Laboratoire des Sciences du Num\'erique de Nantes and China Scholarship Council}}
 %
-\titlerunning{Abbreviated paper title}
+\titlerunning{A Heuristic for Reachability Problem}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{Xinwei Chai\orcidID{0000-0001-7546-7068}\and Morgan Magnin \and Olivier Roux\inst{1}}
+\author{Xinwei Chai \and Morgan Magnin \and Olivier Roux}
 %
 \authorrunning{X. Chai et al.}
 % First names are abbreviated in the running head.
@@ -46,75 +46,54 @@
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-On demand of efficient reachability analysis due to the inevitable complexity of large-scale biological models, this paper is dedicated to a novel approach: PermReach, for reachability problem of our new framework, Asynchronous Binary Automata Networks (ABAN). 
+On the demand of efficient reachability analysis due to the inevitable complexity of large-scale biological models, this paper is dedicated to a novel approach: PermReach, for reachability problem of our new framework, Asynchronous Binary Automata Networks (ABAN). 
 ABAN is an expressive modeling framework which contains all the dynamics behaviors performed by Asynchronous Boolean Networks. 
 Compared to Boolean Networks (BN), ABAN has a finer description of state transitions (from a local state to another, instead of symmetric Boolean functions). 
-To analyze the reachability properties on large-scale models (like the ones from systems biology), previous works exhibited an efficient abstraction technique called Local Causality Graph (LCG). 
+To analyze the reachability properties on large-scale models (like the ones from systems biology), previous works have exhibited an efficient abstraction technique called Local Causality Graph (LCG).
 However, this technique may be not conclusive. Our contribution here is to extend these results by tackling those complex intractable cases \textit{via} a heuristic technique. 
-To validate our method, tests were conducted in large biological networks, showing that our method is more conclusive than existing ones.
-\cite{marx2013}
+To validate our method, tests were conducted in large biological networks and randomly generated examples, showing that our method is more conclusive and faster than existing ones.
 
-\keywords{Asynchronous Binary Automata Networks \and Local Causality Graph \and Heuristics.}
+\keywords{Asynchronous Binary Automata Networks \and Simplified Local Causality Graph \and Heuristics.}
 \end{abstract}
-
 \section{Introduction}
 \label{intro}
 Works on concurrent systems have been of interest for systems biology for a decade \cite{bockmayr2002using,bortolussi2008modeling,wiley2003computational}. 
 In this context, the challenges nowadays consist of not only model validation with regard to existing knowledge on systems but also behavior prediction of these systems. 
 %In this context, reachability issue on formal models is a critical challenge which not only validates models with regard to existing knowledge on systems, but also addresses predictions of the behavior of these systems.
-With quantities of available data provided by new technologies, \textit{e.g.} DNA microarray \cite{marx2013}, there is a growing need for high-performance analytic tools, especially for reachability problem, as many static and dynamical properties are transformable to the reachability of certain states. Reachability problem has been studied under many different modeling frameworks for decades \cite{akutsu2007control,barrett2006complexity,Daws1998,esparza1998,mayr1984,wozna2003} and takes an important part in Model Checking \cite{clarke20142}. 
+With quantities of available data provided by new technologies, \textit{e.g.} DNA microarray \cite{marx2013}, there is a growing need for high-performance analytic tools, especially for reachability problem, as many static and dynamical properties are transformable to the reachability of certain states.
+Reachability problem has been studied under many different modeling frameworks for decades \cite{akutsu2007control,barrett2006complexity,Daws1998,esparza1998,mayr1984,wozna2003} and takes an important part in Model Checking \cite{clarke20142}. 
 State Space Explosion problem arises in reachability analysis of concurrent systems as the state space is exponential to the number of components in the model, thus disables naive approaches. 
-%More concretely, Peterson has shown that the reachability problem of Petri net is exponential time-hard and exponential space-hard \cite{peterson1977petri}, and this conclusion does not change even in some special situations \cite{esparza1998}. 
-%We are prone to believe that the reachability of Boolean Network is also in this class, as there does not exist an efficient solution of polynomial complexity, although there does not exist such formal proof for the non-existence.
 
 Related studies have been carried over various frameworks: Plateau et al. \cite{plateau1991stochastic} propose a Stochastic Automata Network and study its steady-state behavior, while the reachability analysis is absent; Li et al. \cite{li2012reachability,li2014stability} investigate theoretically the stability, controllability and reachability of Switched Boolean Networks, but their method remains computationally expensive.  
-
-To tackle the State Space Explosion problem, symbolic model checking \cite{burch1992symbolic} and SAT-solvers \cite{abdulla2000symbolic} have been considered over years, but the solution space of original problem remains huge. Paulev\'e \textit{et al.} \cite{folschette2015,pauleve2011} have proposed Automata Network (AN) for modeling concurrent systems. 
+To tackle the State Space Explosion problem, symbolic model checking \cite{burch1992symbolic} and SAT-solvers \cite{abdulla2000symbolic} have been considered over years, but the solution space of original problem remains huge.
+Paulev\'e \textit{et al.} \cite{folschette2015,pauleve2011} have proposed Automata Network (AN) for modeling concurrent systems. 
 They provide an approach to address this issue by designing a static abstraction (with an over-approximation and an under-approximation of the real dynamics) inspired by abstract interpretation: Local Causality Graph (LCG). 
 This static analysis drastically reduces the state-space and avoids costly global search \cite{pauleve2012}.
 
-In many circumstances, LCG is able to give a conclusive result on the reachability of the target states in polynomial time to the number of automata \cite{pauleve2016goal}. 
-However there exists inconclusive cases which disable the reasoning of sufficient conditions, if there exists cycles or conflicts in the LCG (in section \ref{limitation}).
-
 With the initiative of LCG, this paper is devoted to the study of general reachability problems in Asynchronous Binary Automata Networks (ABAN), then to gain a more profound understanding of the dynamics of biological systems. 
 Many biological networks are encoded in Boolean style \cite{kauffman1969}, because BN is a simple formalism but with strong expressiveness also due to the imprecision of raw data.
-Each automaton in ABAN has 2 states corresponding to the bit 0 and 1 in BN but ABANs is more expressive than BN. 
-For example, to model the dynamic behavior ``$a\gets$ $1$ when $b=1$'', one has $a(t+1)=b(t)$ in BN.
+However BN may be not expressive enough.
+To model the dynamic behavior ``$a\gets$ $1$ when $b=1$'', one has $a(t+1)=b(t)$ in BN.
 $a$ always follows the evolution of $b$ but with an unwanted behavior ``$a\gets 0$ when $b=0$''.
-ABAN can model this dynamics as \textit{via} \ac{b_1}{a_0}{a_1} without redundancy. 
-Besides, BNs are transformable to Automata Networks, and this property makes ABAN more extensive (see Appendix \ref{appendix:C}).
+ABAN models this dynamics as \textit{via} \ac{b_1}{a_0}{a_1} without redundancy. 
+Besides, BNs are transformable to Automata Networks, and this property makes ABAN more extendable (Appendix \ref{appendix:C}).
 
-To solve a problem in BN or ABAN which is costly for naive approaches, there are basically two methodologies: 
-\begin{enumerate}
-\renewcommand{\labelenumi}{(\theenumi)}
-\item abstract the original problem or find a simplified formalism
-\item apply heuristic
-\end{enumerate}
-(1) guarantees a correct solution for the problem after abstraction which is not necessarily equivalent to the solution of the original problem; 
-(2) keeps the original problem but does not guarantee a correct solution.
-We are going to walk on the pathway (2) of heuristic.
-After diving into the mechanics of LCG and the inconclusive cases, we figure out the reason why those cases are intractable by existing static reasoning. 
-With a better understanding of the internal structure of LCGs, we develop a heuristic technique aiming at the application for general instances. 
+In many circumstances, LCG is able to give a conclusive result on the reachability of target states in polynomial time to the number of automata \cite{pauleve2016goal}. 
+However there exists inconclusive cases which disable the reasoning of sufficient conditions.
+After diving into the mechanics of LCG and the inconclusive cases, we figure out why those cases are intractable by pure static analysis. 
+We develop a heuristic technique aiming at the application for general instances. 
 This heuristic method has a better performance on conclusiveness than static reasoning, because it attempts to explore a part of the system dynamics \textit{via} partial verification.
 In the end, we conduct tests on signaling networks of around 100 components (TCR and EGFR, see Section \ref{sect:5}): the results of LCG contain inconclusive instances \cite{folschette2015} while our new method solves them.
 
-This paper is organized as follows: in section 2, we will introduce the formal background, BN and Asynchronous Binary Automata Network (ABAN); section 3 presents the analysis of dynamics using only static reasoning; 
-%section 4 states the fact that reachability problem is in general \npc{}, suggesting it is normal that there exist inconclusive cases;
-section 4 is the core content of this paper, concerning the solution of inconclusive cases; discussion about tests and conclusion are placed in section 5 and 6.
+This paper is organized as follows: in section 2, we will introduce the formal background, Asynchronous Binary Automata Network (ABAN); section 3 presents the analysis of dynamics using only static reasoning; 
+section 4 is the core content of this paper, concerning the solution of inconclusive cases; discussion about tests and conclusion are placed in section 5 and 6. \textcolor{red}{To revise at last}
 
 \section{Preliminaries}\label{sect:2}
 \textit{Notations}:
+\textcolor{red}{verify if they are all used or add some new}
 $::$ sequential connector;
 $\#$ cardinal;
 $a.$next the successor of $a$. 
-
-%The notion of BN is proposed by S.Kauffman in 1969 \cite{kauffman1969}, and is mainly to be used to demonstrate the \npcs{} of reachability problem in this paper:
-%\begin{definition}[BN]
-%A Boolean network (BN) is defined as $G_B= (V,\ F)$ where $V$ is the set of vertices $v_i$ containing Boolean variables and $F$ is the set of Boolean transitory functions $f_i$. Typically, $f_i$ is defined as $v_i (t+1)=f_i (v_1 (t),v_2 (t),\cdots,v_n (t))$, and we denote $\mathbf{V}_i$ the actual functioning variables among $v_1 (t),v_2 (t),\cdots,v_n (t)$, then $v_i (t+1)=f_i (\mathbf{V}_i)$.
-%\end{definition}
-%Although all the transitory functions are defined, the dynamics of the system is not fixed yet. At every instant $t$, different choices of possible states of the next moment $t+1$ make different dynamics, basically the choices are mainly classified by synchronous and asynchronous dynamics \cite{bernot2009}. In this paper, we are going to study the asynchronous one, which allows at most one transition be fired at every instant, while synchronous dynamics updates all the vertices simultaneously for each time point. 
-%
-%BNs can be used to study static properties (\textit{e.g.} attractors, homeostasis) \cite{hopfensitz2013attractors}, but when facing with dynamic properties, brute force search or ordinary symbolic model checking techniques are not proper for big-scale models for their computational complexity. Thus ABAN and SLCG are proposed to reason dynamical properties statically.
 
 Asynchronous Binary Automata Network (ABAN) is a variant of traditional AN.
 Binary means that every automaton has exactly two possible states $(0,1)$ and asynchronous implies the update scheme with no more than one automaton can change its value at a time. 
@@ -122,216 +101,156 @@ Binary means that every automaton has exactly two possible states $(0,1)$ and as
 \begin{definition}[ABAN]
 An ABAN is a triplet $AB = (\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, where:
 \begin{itemize}
-\item $\mathbf{\Sigma}\triangleq\{a,b,\ldots,z\}$ is the finite set of automata with every component possessing a Boolean state;
+\item $\mathbf{\Sigma}\triangleq\{a,b,\ldots\}$ is the finite set of automata with every component possessing a Boolean state;
 \item $L_a\triangleq\{a_0,a_1\}$ is the set of Boolean states of automaton $a\in \mathbf{\Sigma}$, $\mathbf{LS}\triangleq \underset{a\in \mathbf{\Sigma}}{\cup} L_a$ is the set of all local states,  $\mathbf{L}\triangleq \underset{a\in \mathbf{\Sigma'}}{\times} L_a$ is the set of joint states where $\mathbf{\Sigma'}\subseteq\mathbf{\Sigma}$. Particularly, if $\mathbf{\Sigma'}=\mathbf{\Sigma}$, $\mathbf{L}$ is the set of global states. 
 The state of automaton $a$ at state $s$ is denoted $s[a]=a_i$;
-\item $\mathbf{T}\subseteq \{A\to b_j\mid b\in \mathbf{\Sigma} \land A\in \mathbf{L}\}$ is the set of transitions, where $A$ is the set of required states for the transition, which allows to flip $b_i$ to the other Boolean state $b_j$.
+\item $\mathbf{T}\subseteq \{A\to b_{i}\mid b\in \mathbf{\Sigma} \land A\in \mathbf{L}\}$ is the set of transitions, where $A$ is the set of required states for the transition, which allows to flip $b_{1-i}$ to $b_i$. $A$ is called head and $b_i$ is called body.
 \end{itemize}
 \end{definition}
 
 \begin{definition}[Dynamics]
-    From global state $s$, the global state after firing transition $tr=A\to b_j$ is denoted $s \cdot t = (s \setminus \{b_i\}) \cup \{b_j\}, b_i \in s$.
+    From global state $s$, the global state after firing transition $tr=A\to b_i$ is denoted $s \cdot tr = (s \setminus \{b_{1-i}\}) \cup \{b_{i}\}, b_{1-i} \in s$.
     The state of a certain automaton $a$ is noted $(s\cdot tr)[a]$.
 \end{definition}
 To describe the evolution of an ABAN, we use the notion of trajectory:
 \begin{definition}[Trajectory]
-Given ABAN $AB = (\mathbf{\Sigma},\mathbf{L},\mathbf{T})$ and a global initial state $\alpha\in \mathbf{L}$, a trajectory $t$ from $\alpha$ is a sequence of transitions $t=tr_1::\cdots :: tr_i::\cdots ::tr_n$ with $tr_i\in\mathbf{T}$ and each $tr_i$ is fireable in $(\alpha \cdot tr_1 \cdot \ldots \cdot tr_{i-1})$.
-From $\alpha$, the global state after firing all transitions of $t$ is $(\alpha \cdot tr_1 \cdot \ldots \cdot tr_n)$, denoted $\alpha \cdot t$.
+Given ABAN $AB = (\mathbf{\Sigma},\mathbf{L},\mathbf{T})$ and a global initial state $\alpha\in \mathbf{L}$, a trajectory $t$ from $\alpha$ is a sequence of transitions $t=tr_1::\cdots :: tr_i::\cdots ::tr_n$ with $tr_i\in\mathbf{T}$ and each $tr_i$ is firable in $(\alpha \cdot tr_1 \cdot \ldots \cdot tr_{i-1})$.
+From $\alpha$, the global state after firing all transitions of $t$ is denoted $\alpha \cdot t$.
 \end{definition}
 
-From a given initial state $\alpha$, the state after firing $\delta$ is denoted $\alpha\cdot \delta$ and its local form of certain automaton $a$ is noted $(\alpha\cdot \delta)[a]$.
-Fig \ref{fig:1} shows an example of ABAN, with initial state $\alpha=\langle a_0,b_0,c_0,d_0,e_0\rangle$ and a possible trajectory is $\delta=\acm{d_0}{b_0}{b_1}::\acm{b_1}{d_0}{d_1}::\acm{d_1}{c_0}{c_1}::\acm{b_1,c_1}{a_0}{a_1}$. After firing $\delta$, final state $\Omega=\alpha\cdot \delta=\langle a_1,b_1,c_1,d_1,e_0\rangle$.
-
-\begin{figure}[ht]
-\centering
-\input{exampleAN}
-\caption{Example of ABAN with initial state $\alpha=\langle a_0,b_0,c_0,d_0,e_0\rangle$, circles stand for states within an automaton, where gray ones are initial states.}\label{fig:1}
-\end{figure}	
-
+%From a given initial state $\alpha$, the state after firing $\delta$ is denoted $\alpha\cdot \delta$ and its local form of certain automaton $a$ is noted $(\alpha\cdot \delta)[a]$.
 \begin{definition}[Reachability]
 Given an global initial state $\alpha$, global state $\Omega$ is reachable iff there exists a trajectory $\delta$ such that $\alpha\cdot \delta=\Omega$, denoted $reach(\alpha, \Omega)$, taking Boolean value $\mathbf{True}$ or $\mathbf{False}$.
 Likewise, local state $\omega=a_i$ is reachable iff there exists a trajectory $\delta$ such that $(\alpha\cdot \delta)[a]=a_i$, denoted $reach(\alpha, \omega)$.
 \end{definition}
+\begin{example}\label{example:aban}
+Fig. \ref{fig:1} shows an ABAN with initial state $\alpha=\langle a_0,b_0,c_0,d_0,e_0\rangle$ and a possible trajectory from $\alpha$: $\delta=\acm{d_0}{b_0}{b_1}::\acm{b_1}{d_0}{d_1}::\acm{d_1}{c_0}{c_1}::\acm{b_1,c_1}{a_0}{a_1}$. After firing $\delta$, final state $\Omega=\alpha\cdot \delta=\langle a_1,b_1,c_1,d_1,e_0\rangle$.
+$\Omega=\langle a_1,b_1,c_1,d_1,e_0\rangle$ or $\omega=a_1$ is said reachable from $\alpha$ \textit{via} trajectory $\delta$, that is $reach(\alpha,a_1)=\mathbf{True}$ and $reach(\alpha,\Omega)=\mathbf{True}$.
+\end{example}
+\begin{figure}[ht]
+\centering
+\input{exampleAN}
+\caption{Example of ABAN, where circles stand for Boolean states within an automaton and gray ones are initial states.}\label{fig:1}
+\end{figure}	
 
-In Fig \ref{fig:1}, $\Omega=\langle a_1,b_1,c_1,d_1,e_0\rangle$ or $\omega=a_1$ is reachable from $\alpha$ \textit{via} trajectory $\delta$, that is $reach(a_1)=\mathbf{True}$ and $reach(\Omega)=\mathbf{True}$.
 To simplify the notations, all the initial states of ABAN are set to 0 by default.
 \section{Static analysis of reachability property}\label{sect:3}
 To approach various dynamical properties of such networks, Local Causality Graph (LCG) is an efficient static analytic tool for reachability put forward by Paulev\'e \textit{et al.} \cite{pauleve2011}. 
 LCG determines the existence of trajectory of the desired state without traversing the whole state space.
 
 LCG functions as follows: its over-approximation and under-approximation which give respectively a necessary condition and a sufficient condition of reachability. 
-With these conditions, we can conclude in many cases.%where the failure of over-approximation implies unreachability and vice versa for under-approximation.
+With these conditions, we can conclude in many cases.
 
-%\begin{table}[ht]
-%\centering
-%\begin{tabular}{c|c|c|c|c}
-%Over-approximation&True&True&False&False\\
-%\hline
-%Under-approximation&True&False&True&False\\
-%\hline
-%Reachability&True&Inconclusive&N/A&False\\
-%\end{tabular}
-%\caption{Truth table of LCG analysis}
-%\label{tab:1}
-%\end{table}
-
-More importantly, LCG is also able to provide us with a trajectory if $\omega_i$ is reachable suggested by under-approximation.
+More importantly, LCG is also able to provide one with a trajectory if $\omega_i$ is reachable suggested by under-approximation.
 We are not going to detail the original version of this trajectory finding technique, instead, we propose its adaptation for ABAN in order to approach the solution of inconclusive cases.
 In this paper, only binary networks are studied, so we propose a simplified form of LCG instead of two LCGs (over and under-approximation) which is well suited for the present need.
-
 The drawback is also clear: there are inconclusive cases, which means LCG is neither able to solve in this situation, nor able to generate a trajectory (if reachable).
-To improve the conclusiveness of this method, we generalize the over- and under-approximation into one (SLCG) and add a more detailed reachability analysis.
+To improve the conclusiveness of this method, we simplified the LCG for over-approximation for binary situations, called SLCG.
 
-To give LCG a wider applicability, in Appendix \ref{appendix:C}, we can see that any BN is transformable to ANs and then SLCG is applicable to its analyses of dynamical properties.
+To give LCG a wider applicability, in Appendix \ref{appendix:C}, any BN is transformable to ANs and then SLCG is applicable to its analyses of dynamical properties.
 \subsection{Simplified Local Causality Graph (SLCG)}
-
-\begin{definition}[SLCG]\label{defLCG}
-Given ABAN $AB = (\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, initial state $\varsigma$ and a desired local state $\omega$, SLCG $A\omesi= (V\omesi,E\omesi)$ is the smallest recursive structure with $V\omesi \subseteq \mathbf{LS}\cup \mathbf{Sol}$ and $E\omesi \subseteq V\omesi\times V\omesi$ which satisfies:
+\begin{definition}[SLCG]\label{defSLCG}
+Given an ABAN $AB =(\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, an initial state $\alpha$ and a target state $\omega$, SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq(V_{\mathrm{state}}\times V_{\mathrm{solution}})\cup(V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
-\omega&\subseteq& V\omesi \\
-a_i\in V\omesi\cap \mathbf{LS} &\Leftrightarrow& \{ (a_i, sol_{a_i})| a_i\in \varsigma\}\subseteq E\omesi \\
-sol_{a_i}\in V\omesi \cap \mathbf{Sol}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}_a (sol_{a_i})\}\subseteq E\omesi
+    \omega&\in& V_{\mathrm{state}} \\
+    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{(a_i, sol_{a_i})| a_i\in \alpha\}\subseteq E \\
+    sol_{a_i}\in V_{\mathrm{solution}}&\Leftrightarrow& \{(sol_{a_i},\mathbf{V}_a(sol_{a_i})\}\subseteq E
 \end{eqnarray*}
-Notations: $\mathbf{Sol}$ is the set of solutions and $\mathbf{V}$ is the set of required local states of $sol_{a_i}$.
+where $V_{\mathrm{state}}\subseteq\mathbf{LS}$ is the set of states, $V_{\mathrm{solution}}\subseteq \mathbf{T}$ is the set of solutions and $\mathbf{V}_a$ is the set of required local states of $sol_{a_i}$.
 \end{definition}
-Intuitively, when the recursive construction is complete, SLCG is in fact a digraph with state nodes $\mathbf{LS}$ and solution nodes $\mathbf{Sol}$. 
-$E$ consists of the links between state nodes and solution nodes. 
-To access certain local states, at least one of its successive solution (corresponding transitions from solution nodes) needs to be fired; similarly, to make one solution node firable, all of its local states need to be satisfied. 
-A recursive reasoning of reachability begins with a state node representing desired local state, go through $a_i\mapsto sol_{a_i}\mapsto b_j \cdots$ and end with initial state (reachable) or a local state without solution successor (unreachable).
+Intuitively, when the recursive construction is complete, SLCG is in fact a digraph with state nodes $V_{\mathrm{state}}$ and solution nodes $V_{\mathrm{solution}}$. 
+$E$ consists of the edges between state nodes and solution nodes. 
+To access certain local states, at least one of its successive solution (corresponding transitions from solution nodes) needs to be fired; to make one solution node firable, all of its successive local states need to be satisfied. 
+A recursive reasoning of reachability begins with a state node representing desired local state, goes through $a_i\mapsto sol_{a_i}\mapsto b_j \cdots$ and ends with initial state (possibly reachable) or a local state without solution successor (unreachable). 
+With SLCG, one can compute the pseudo-reachability of a local state, which is a necessary condition of reachability.
 
-\begin{figure}[!ht]
+\begin{definition}[Pseudo-reachability]\label{defPseudoReach}
+Given an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}},E)$ with initial state $\alpha$, the pseudo-reachability of node $v\in V_{\mathrm{state}}$ is defined as
+\begin{equation}
+\nonumber
+    r'(\alpha,v)=
+    \begin{cases}
+    \mathrm{\bf True} & {\rm if\ } v\in \alpha\\
+    \mathrm{\bf False} & {\rm if\ } v\not\in \alpha\ {\rm and} \not\exists(s,sol) \in E\\
+    %\bigvee_{(s,sol) \in E} \mathrm{firable}(sol) & otherwise
+    \bigvee_{(s,sol) \in E} (\bigwedge_{(sol,s)\in E} r'(\alpha,s)) & {\rm otherwise}
+\end{cases}
+\end{equation}
+%where $\mathrm{firable}(sol)=\bigwedge_{(sol,s)\in E} r'(\alpha,s)$. 
+
+\end{definition}
+\begin{example}
+In Fig \ref{fig:2}, the left solution node of $a_1$ is not useful because its successor $e_1$ does not have any successive solution node, \textit{i.e.} $e_1$ is unreachable;
+the right solution node of $a_1$ requires $b_1$ and $c_1$, they finally lead to $d_0$ then to $\varnothing$.
+\textit{i.e.} nothing is needed to reach $d_0$ as $d_0$ appears in the initial state (trivial solution).
+One can figure out state nodes act as OR gates while solution nodes act as AND gates. The pseudo-reachability $r'(\alpha,a_1)$ is computed recursively as follows:
+\begin{align*}
+r'(\alpha,a_1)&=r'(\alpha,e_1)\lor(r'(\alpha,b_1)\land r'(\alpha,c_1))\\
+&=r'(\alpha,b_1)\land r'(\alpha,d_1)=r'(\alpha,b_1)=r'(\alpha,d_0)=\mathbf{True}
+\end{align*}
+\end{example}
+
+\begin{figure}[ht]
 \centering
 \input{LCGexampleAN}
-\caption{SLCG showing the causality of $a_1$ in Fig \ref{fig:1}, with the squares representing local states and small circles representing solution nodes}
+\caption{SLCG showing the local causality of $a_1$ of the ABAN in Fig \ref{fig:1}, with the squares representing local states and small circles representing solution nodes}
 \label{fig:2}
 \end{figure}
-In Fig \ref{fig:2}, the reachability of $a_1$ is computed locally. 
-The left solution node of $a_1$ does not lead to the goal because its successor $e_1$ does not have any successive solution node, \textit{i.e.} $e_1$ is unreachable;
-the right solution node of $a_1$ requires $b_1$ and $c_1$, and they finally lead to $d_0$ then to $\varnothing$, which is to say, we need nothing to reach $d_0$ as $d_0$ appears in the initial state (trivial solution).
-
-We can figure out state nodes act as an OR gates while solution nodes act as AND gates. The reachability suggested by SLCG $reach'$ (different from real reachability $reach$) is computed recursively as follows:
-\begin{align*}
-reach'(a_1)&=reach'(e_1)\lor (reach'(b_1)\land reach'(c_1))\\
-&=reach'(b_1)\land reach'(d_1)=reach'(b_1)=reach'(d_0)=\mathbf{True}
-\end{align*}
 
 The algorithm of SLCG construction is in Appendix \ref{appendix:B}.
 
-%Compared to original LCG \cite{pauleve2012}, SLCG removes the notion ``Objective'' so that the conciseness gets improved. Because in Boolean semantics, to access certain local state $a_i$, the only way is $a_{\lnot i}\Rsh a_i$, but in multi-level networks, to access for example $a_2$ from $a_0$, there are two possibilities: $a_0\Rsh a_2$ and $a_0\Rsh a_1\Rsh a_2$, which require the notion of ``Objective'' to create forks for different reaching pathways.
-
 \subsection{Limitation of SLCG}\label{limitation}
-
+Although SLCG allows one to reason the pseudo-reachability locally without traversing the whole state space, it is not equivalent to the reachability if there exists the following structures:
 \begin{enumerate}
-\item No cycles in SLCG
-\item No conflicts in SLCG
+\item Cycles in SLCG
+\item Conflicts in SLCG
 
 \end{enumerate}
-To be more formal, a cycle (1) is in the form of $a_i\mapsto\cdots\mapsto a_i$, i.e. to access $a_i$, we have to reach first $a_i$. This self-involvement makes the reachability inconclusive. 
-A conflict (2) is that a solution node has multiple successors generating branches, and there are different states of the same automaton \textit{i.e.} $a_i$ and $a_{\lnot i}$. 
-We can not decide the order of reaching these states, because reaching one state may disable the reachability of another one.
+To be more formal, a cycle (1) is in the form of $a_i\mapsto\cdots\mapsto a_i$, i.e. to access $a_i$, one has to reach first $a_i$. This self-involvement makes the reachability inconclusive. 
+A conflict (2) is that a solution node has multiple successors generating branches, and there are different states of the same automaton \textit{i.e.} $a_i$ and $a_{1-i}$. 
+We can not decide the order of reaching these states, because reaching one local state may disable the reachability of another one.
 Sometimes there exists a trajectory which accesses these states in certain order, sometimes there does not exist such.
 
-In the following examples, if we ignore those restrictions, SLCG does not imply real reachability, nor it is possible to extract a trajectory.
+In the following examples, if we ignore those limitations, SLCG does not imply real reachability.
 
-\begin{enumerate}
-\item Example of %Fig \ref{fig:1} and 
+
+\begin{example}\label{example:reach}
+In Fig \ref{fig:1} and 
 Fig \ref{fig:2}, although there is a conflict, $a_1$ is reachable.
-\item $\mathbf{\Sigma}=\{a,b,c\}$, $\mathbf{T}=\{\acm{b_0}{a_0}{a_1},\ \acm{a_0}{b_0}{b_1},\ \acm{\{a_1,b_1\}}{c_0}{c_1}\}$,  desired final state $\omega=a_1$. 
+\end{example}
+
+\begin{example}\label{example:unreach}
+In Fig. \ref{fig:3}, $\mathbf{\Sigma}=\{a,b,c\}$, $\mathbf{T}=\{\acm{b_0}{a_0}{a_1},\ \acm{a_0}{b_0}{b_1},\ \acm{\{a_1,b_1\}}{c_0}{c_1}\}$,  desired final state $\omega=a_1$. 
 Both $a_1$ and $b_1$ are reachable, but they can not be reached simultaneously.
-In the SLCG, there are two branches, $a_1\mapsto b_0$ and $b_1\mapsto a_0$, the automata $a$ and $b$ involve themselves in different branches, where a conflict appears.
+In the SLCG, there are two branches, $a_1\mapsto b_0$ and $b_1\mapsto a_0$.
+Automata $a$ and $b$ involve themselves in different branches, reaching one of them disables the reachability of another one.
+\end{example}
+
 \begin{figure}[ht]
 \centering
 \input{LCG_limitation}
-\caption{The SLCG of example 2}
+\caption{The ABAN and the SLCG of example 2}
 \label{fig:3}
 \end{figure}
-%\item $\mathbf{\Sigma}=\{a,b,c\}$, $\mathbf{T}=\{\acm{b_0}{a_0}{a_1},\acm{a_0}{b_0}{b_1},\acm{\varnothing}{a_1}{a_0}, \acm{\varnothing}{b_1}{b_0},\acm{\{a_1,b_1\}}{c_0}{c_1}\}$, $\omega=c_1$. 
-%Similarly to example 2, both $a_0$ and $b_0$ are reachable, but they can not be reached simultaneously. 
-%In this example, we can see a cycle in the SLCG $a_1\mapsto b_0\mapsto b_1 \mapsto a_0\mapsto a_1$.
-%\begin{figure}[ht]
-%\centering
-%\input{LCG_limitation2}
-%\caption{The SLCG of example 3}
-%\label{fig:4}
-%\end{figure}
-
-\end{enumerate}
-
-In Example 1, $a_1$ is reachable, while in Example 2, $c_1$ is unreachable. This inconclusiveness is a limitation of SLCG.
+In \textit{Example \ref{example:reach}}, $a_1$ is reachable, while in \textit{Example \ref{example:unreach}}, $c_1$ is unreachable. This inconclusiveness is a limitation of SLCG as $r'(\alpha,\omega)$ is not equivalent to $reach(\alpha,\omega)$.
 
 As there are cycles in SLCG generated by feedback loops in biological regulatory networks, the existing approach does not allow a solution generally.
 
-Even though we broadened the applicability of SLCG, this method is still not universally applicable for all ABANs or BNs due to the limitations. From the former examples, we realize that it is difficult to solve the reachability problem in general. 
+%Even though we broadened the applicability of SLCG, this method is still not universally applicable for all ABANs or BNs due to the limitations. 
+From the former examples, we realize that it is difficult to solve the reachability problem in general. 
 In the rest of this paper, we are going to discuss how to improve the performance of existing approaches and our new methods. 
-
-\subsection{Trajectory extraction for SLCG}\label{sectExtract}
-In this section, we will first prove that if an AN is binary, reachability problem becomes equivalent to $reach'$ suggested by SLCG, with the restrictions in section \ref{limitation} satisfied.
-With the equivalence, we propose a method to find a trajectory starting from the initial state and ending with desired final state.
-
-\begin{theorem}
-In an ABAN, partial reachability and the reachability obtained by SLCG are equivalent, iff there is no cycle nor conflict.
-\end{theorem}
-\begin{proof}
-Necessity: SLCG gives a necessary condition of reachability, thus all reachable local states in ABANs satisfy their reachability suggested by SLCG.
-
-\noindent Sufficiency: in SLCG, the reachability is computed recursively.
-\begin{enumerate}
-\item $\forall a_i\in \mathbf{LS},\ reach(a_i)=\bigvee reach(sol_{a_i})$, as the reachability of any solution
-of $a_i$ makes $a_i$ reachable.\label{1}
-\item As there is no conflict in the SLCG, $\forall sol\in \mathbf{Sol}$, for all relating transitions $tr=\acm{b_i}{c_j}{c_k}$ of $sol$, $b$ are different automata from each other.
-Firing any $tr$ will not influence the firability of other transitions. Therefore $reach(sol)=\bigwedge reach(b_i)$.
-\end{enumerate}
-Furthermore, on one hand, as there is no cycle in the SLCG, in every iteration $reach(a_i)=\bigvee reach(sol_{a_i})$ and $reach(sol)=\bigwedge reach(b_i)$, $b_i$ are newly appeared local states, otherwise claiming $b_i$ will form a cycle $b_i\mapsto sol_{b_i}\mapsto \cdots b_i$.
-On the other hand, $\mathbf{LS}$ is finite, the iteration will come to an end where there is no more solution node (unreachable) or initial state (reachable).	
-\qed\end{proof} 
-
-Note that for any local initial state $a_i$, $reach(a_i)=reach'(a_i)=\mathbf{True}$; similarly, for any local states $b_j$ without successor solution node, $reach(b_i)=reach'(b_i)=\mathbf{False}$.
-As we can see the reasoning for $reach$ and $reach'$ are identical, we have $reach=reach'$, \textit{i.e.} partial reachability and the reasoning of SLCG are equivalent.
-
-Algorithm \ref{algorithm:1} shows exactly how the trajectory is formed in depth-first order (find one valid then stop searching) after computing the reachability of every node in SLCG:
-
-\begin{algorithm}[ht]
-\begin{algorithmic}
-\State Initialization: trajectory $\delta\gets\varnothing$, $visited=\varnothing$
-\State Input: desired state $a_i$
-\Function{extract}{$a_i$, $\delta$}
-	\State $sol\gets $random($a_i{\rm .next}$)%\Comment{choose randomly from the solutions of $a_i$}
-	\State $\delta \gets (\acm{sol{\rm .next}}{a_{\lnot i}}{a_i}::\delta$)
-	\If{$a_i\in visited$}
-    	\State \Return $\delta$
-    \EndIf
-	\If{$sol{\rm .next}\neq \varnothing$}
-    	\For{$b_j\in sol{\rm .next}$}
-        	\State$visited\gets visited\cup b_i$
-            \State $\delta\gets \delta::$\Call{extract}{$b_j$, $\delta$}
-        \EndFor
-    \EndIf
-\EndFunction
-\end{algorithmic}
-\caption{Trajectory-extraction}
-\label{algorithm:1}
-\end{algorithm}
-
-Let us take the example in Fig \ref{fig:2}, even though there is a conflict ($d_0$ and $d_1$ appear in different branches of solution node of $a_1$). 
-Start from $a_1$, the only reachable solution node requires $b_1\land c_1$, for now $\delta=\acm{b_1,c_1}{a_0}{a_1}$.
-Begin with the branch $c_1$, we have $\delta=\acm{d_0}{b_0}{b_1}::\acm{b_1}{d_0}{d_1}::\acm{d_1}{c_0}{c_1}::\acm{b_1,c_1\}}{a_0}{a_1}$, branch $c_1$ ends. 
-Continue with branch $b_1$, we find out $b_1\in visited$ is already reached, branch ends. 
-The trajectory is the same as that in Fig \ref{fig:1}.
-
-
 
 \section{Heuristics for inconclusive cases}\label{sect:4}
 SLCG loses its generality of solution due to the existence of AND gates.
 In this section, we are trying to make a little compromise in exactitude in order to have a general solution of reachability problem. 
-As a consequence, the out-degree of corresponding AND gates in SLCG is bounded to $O (1)$.
+As a consequence, the out-degree of corresponding AND gates in SLCG is bounded to $O(1)$.
 This hypothesis is reasonable, because in ordinary biological networks, every component interacts only with a small part of the whole network \cite{akutsu2007control}.
-
 To face with an arbitrary ABAN in this context, for now, the remaining tasks are cycles and conflicts in its SLCG.
 \subsection{Preprocessing of SLCG}\label{sectprecond}
 \subsubsection{Detection of cycles}
-To be more precise, the notion of cycle can be expanded to Strongly Connected Components (SCC) of size greater than 1 as an SCC may contain several nested cycles. 
-In \cite{tarjan1972}, the search of SCCs can be done in $O (|V|+|E|)$ time. 
-As SLCG is in fact a sparse graph (the out-degree is limited to $O (1)$), the search of SCCs can be done in $O (|V|)$, \textit{i.e.} linear time.
+The notion of cycle can be expanded to Strongly Connected Components (SCC) of size greater than 1 as an SCC may contain several nested cycles. 
+In \cite{tarjan1972}, the search of SCCs can be done in $O(|V|+|E|)$ time. 
+%As SLCG is in fact a sparse graph (the out-degree is limited to $O(1)$), the search of SCCs can be done in $O(|V|)$, \textit{i.e.} linear time.
 
 \subsubsection{Removing cycles}
 \begin{theorem}\label{cycletheo}
@@ -340,41 +259,32 @@ Given a cycle, if it contains no OR gate% towards outside of cycle
 \end{theorem}
 
 \begin{proof}
-Suppose an arbitrary cycle $C=a_i\mapsto \cdots b_j\mapsto\cdots \mapsto a_i$, with $\mapsto$ an arrow in SLCG. Note that $reach'(a_i)\to reach'(b_j)\to reach'(b_j.\text{next})\to\cdots\to reach'(a_i)$, where $\to$ is the implication mark. $a_i$ is reachable if $a_i$ is reachable. Such self-dependent implication is true only if $reach'(a_i)=\mathbf{False}$.
-\qed
+Suppose an arbitrary cycle $C=a_i\mapsto \cdots b_j\mapsto\cdots \mapsto a_i$, with $\mapsto$ an edge in the SLCG.
+Note that $r'(\alpha,a_i)\implies r'(\alpha,b_j)\implies r'(\alpha,b_j.\text{next})\implies \cdots\implies r'(\alpha,a_i)$.
+According to the definition of $r'$, $r'(\alpha,a)=\mathbf{True}$ only if $\exists c_k\in C$ and $c_k\in \alpha$.
+If there exists such $c_k$, $C$ should not exist as the reasoning stops at $c_k$ and does not form a cycle, contradiction.
+$r'(\alpha,a_i)=r'(\alpha,b_j)=\cdots =\mathbf{False}$.\qed
 \end{proof}
-
-%With this theorem, we can also deal with cycles containing forks. 
-%\begin{lemma}\label{cyclelem}
-%The reachability of the elements in a cycle with forks equals to the disjunction of the reachability of the forks.
-%\end{lemma}
-
-%\begin{proof}
-%Suppose a cycle $C=a_i\mapsto \cdots b_j\mapsto \circ\mapsto c_k \mapsto\cdots \mapsto a_i$, where $\circ$ represents a solution node. 
-%Suppose there is one fork located at $b_j$.
-%$b_j.\text{next}=\{c_k,\{d_l\}\}$, where $\{d_l\}$ are outsiders of the cycle.
-%According to the reasoning of SLCG, $reach (b_j)=reach (c_k)\lor (\bigvee reach (d_{l}))$.
-%As in the proofs above, all the local states in the cycle share the same reachability: $reach (b_j)=reach (c_k)\Rightarrow reach (b_j)=reach (b_j)\lor (\bigvee reach (d_{l}))$. 
-%To keep this equation always valid, there must be $reach (b_j)=\bigvee reach (d_{l})$. Similarly, we can obtain the reachability in a cycle with plural forks: $reach (C)=\bigvee reach (forks)$.
-%\qed\end{proof}
 
 With Theorem \ref{cycletheo}, before stepping into the next part of dealing with AND gates, we can perform a recursive preprocessing by deleting the cycles in SLCG to ensure no cycle remaining.
 
 \subsection{AND Gates in SLCG}\label{sectAndGates}
 After preprocessing, we can get rid of cycles.
-The guideline is then to analyze an SLCG with only AND gates.
-To achieve this goal, we need to find a trajectory reaching all the components of given AND gates simultaneously.
-These components form a sub-state, and if the sub-state is reachable, the corresponding transition of AND gate can be fired. 
+The next step is to analyze an SLCG with only AND gates.
+To achieve this goal, we need to find a trajectory reaching all the components of the given AND gates simultaneously.
+These components form a joint state, and if the joint state is reachable, the corresponding transition of AND gate can be fired. 
 
-Example: in Fig \ref{fig:1}, $sub=\{ b_1,c_1\}$ is a sub-state, when $sub$ is reached, transition \ac{b_1,c_1}{a_0}{a_1} is firable.
-
-As the cycles there are no cycles, the order reaching the members in a sub-state is the only factor that affects the final reachability. 
-The reachability of a sub-state can be then formulated as sequential reachability:
+In Fig \ref{fig:1}, $s=\{ b_1,c_1\}$ is a joint state, when $s$ is reached, transition \ac{b_1,c_1}{a_0}{a_1} is firable.
+As the cycles there are no cycles, the order reaching the members in a joint state is the only factor that affects the final reachability. 
+The reachability of a joint state can be then formulated as sequential reachability:
 \begin{definition}[Sequential reachability]
-Let $sub=\{ls_1,\ldots,ls_n\}$ and sequence $seq=ls_1::\ldots::ls_n$, the sequential reachability of $sub$ is denoted $reach (seq)=reach (ls_1)::\ldots::reach (ls_n)$, i.e. from initial state, the $sub$ is reachable in the order $seq$ by following the trajectories given by SLCG.
+Let joint state $s=\{ls_1,\ldots,ls_n\}$, $p_1\ldots p_n$ is an arbitrary order of $1\ldots n$ and sequence $seq=ls_{p_1}::\ldots::ls_{p_n}$, sequential reachability of $seq$ is denoted $reach(\alpha,seq)=reach(\alpha,ls_1)::\ldots::reach(\alpha,ls_n)$.
+From initial state $\alpha$, $s$ is reachable in the order $seq$ by following the trajectories given by SLCG.
 \end{definition}
 
-Example: Fig \ref{fig:5} shows the SLCG for reachability of $c_1$ in ABAN with transitions $\mathbf{T}=\{\acm{a_1,b_1}{c_0}{c_1},\acm{b_0}{a_0}{a_1},\acm{c_0}{b_0}{b_1}\}$.
+\begin{example}
+Fig \ref{fig:5} shows the SLCG for reachability of $c_1$ in ABAN with transitions $\mathbf{T}=\{\acm{a_1,b_1}{c_0}{c_1},\acm{b_0}{a_0}{a_1},\acm{c_0}{b_0}{b_1}\}$.
+\end{example}
 \begin{figure}[ht]
 \centering
 \input{ExampleOrderLCG}
@@ -383,47 +293,38 @@ Example: Fig \ref{fig:5} shows the SLCG for reachability of $c_1$ in ABAN with t
 \end{figure}
 
 $a_1$ and $b_1$ are reachable respectively but is not necessarily for $c_1$.
-If we begin with the fork $a_1$, $sub=\{a_1,b_1\}$ is reachable with trajectory $\acm{b_0}{a_0}{a_1}::\acm{c_0}{b_0}{b_1}::\acm{a_1,b_1}{c_0}{c_1}$. 
-However if we begin with the fork $b_1$, after firing $\acm{c_0}{b_0}{b_1}$, $b_0$ is no longer reachable, resulting the unreachability of $a_1$.
-We have $reach (a_1::b_1::c_1)=\mathbf{True}$ and $reach (b_1::a_1::c_1)=\mathbf{False}$.
+If we begin with the branch with $a_1$, $s=\{a_1,b_1\}$ is reachable with trajectory $\acm{b_0}{a_0}{a_1}::\acm{c_0}{b_0}{b_1}::\acm{a_1,b_1}{c_0}{c_1}$. 
+However if we begin with the branch $b_1$, after firing $\acm{c_0}{b_0}{b_1}$, $b_0$ is no longer reachable, resulting the unreachability of $a_1$.
+We have $reach(\alpha,a_1::b_1::c_1)=\mathbf{True}$ and $reach(\alpha,b_1::a_1::c_1)=\mathbf{False}$.
 
-As the firing order matters, we come to verify all the possible sequential reachabilities of certain sub-state to obtain its reachability.
+As the firing order matters, we come to verify all the possible sequential reachabilities of certain joint state to obtain its reachability.
 
 \begin{proposition}\label{theoperm}
-Given joint state $sub=\{ls_1,\ldots,ls_n\}$, with all the local states in $sub$ are reachable: $reach (ls_i)=\mathbf{True},\ \forall i\in[1,n]$, the set of permutations of $sub$ is denoted $Perm (sub)=\{(ls_1::ls_2,::\ldots ::ls_n),\ \cdots,\ (ls_n::ls_{n-1}::\ldots,::ls_1)\}$. $\bigvee reach (Perm (sub))=\mathbf{True}$ is a necessary condition of $reach (sub)=\mathbf{True}$.
+Given joint state $s=\{ls_1,\ldots,ls_n\}$, with all the local states in $s$ are reachable: $reach(\alpha,ls_i)=\mathbf{True},\ \forall i\in[1,n]$, the set of permutations of $s$ is denoted $Perm(s)=\{(ls_1::ls_2,::\ldots ::ls_n),\ \cdots,\ (ls_n::ls_{n-1}::\ldots,::ls_1)\}$. $\bigvee reach(\alpha,Perm(s))=\mathbf{True}$ is a necessary condition of $reach(\alpha,s)=\mathbf{True}$.
 \end{proposition}
 \begin{proof}
-Notation: $a_i\triangleright b_j$ means that $a_i$ must be present before $b_j$.
+Notation: $a_i\triangleright b_j$ means that $a_i$ must appear before $b_j$.
 
-Necessity: if there exists a permutation $perm_i\in Perm$ s.t. $reach (perm_i)=\mathbf{True}$, then $sub$ can be reached according to $perm_i$.
+Necessity: if there exists a permutation $perm_i\in Perm$ s.t. $reach(\alpha,perm_i)=\mathbf{True}$, then $s$ can be reached according to $perm_i$.
+To reach $s$, every local state in SLCG is mandatory to be reached.
+Given $\bigvee reach(\alpha,Perm(s))=\mathbf{False}$, does there exist a permutation $perm(Ls)$ s.t. $reach(\alpha,s)=\mathbf{True}$?
 
-To reach $sub$, every local state in SLCG is mandatory to be reached.
-Given $\bigvee reach (Perm (sub))=\mathbf{False}$, does there exist a permutation $perm (Ls)$ s.t. $reach (sub)=\mathbf{True}$?
-
-Although all the local states in $sub$ are reachable, the existence of conflicts leads to potential unreachability of $sub$.
-Some conflicts are solvable, see Fig \ref{fig:5}. There are also unsolvable ones.
-An unsolvable conflict can be formalized as: $ls_1\triangleright ls_2 \triangleright \cdots \triangleright ls_1$, where $ls_1$ is before $ls_2$ and $ls_2$ is before $ls_1$, which is impossible in asynchronous semantics.
-Example: in Fig \ref{fig:3}, to reach $\{a_1,b_1\}$, $a_1\triangleright b_1\triangleright a_1$, so the sub-state is unreachable. 
-We can see the conflict is unsolvable no matter how we change the order of firing.
-For solvable conflicts, $perm(sub)$ probably covers one of the admissible order.
-One possible counterexample is shown in Fig. \ref{FigConflictInForks}. %Sufficiency is proved. Hence $reach (sub)=\bigvee reach (Perm (sub))$.
+For solvable conflicts, $perm(s)$ probably covers one of the admissible order.
+One possible counterexample is shown in Fig. \ref{FigConflictInForks}.
 \qed\end{proof}
 
 It is remarkable that the former approach is efficient in deciding reachability and finding reaching trajectory, but it has a drawback: if there exists a solvable conflict in different forks, traversing permutations may be not able to find the trajectory towards goal state.
 In Fig \ref{FigConflictInForks}, if $sol_{c_1}$ is resolved first, automaton $d$ will be on state $d_1$, which disables the reachability of $b_1$.
-In other cases, the trajectory of $a_1$ is retrievable.%It is normal because reachability problem in ABAN is \npc{} which prevent us from effective and exact solution.
+In other cases, the trajectory of $a_1$ is retrievable.
 \begin{figure}[ht]
 \centering
 \input{ConflictInForks}
 \caption{Conflicts in different forks}\label{FigConflictInForks}
 \end{figure}
 
-%With Theorem \ref{theoperm}, we can ensure that no solution is missed through the verification of all the permutations of sub-states. 
-%For one sub-state, the number of permutations is $\mathbf{A}_I^I=I!$, as $I=O (1)$, this number is adjustable by controlling $I$ ($7!=5040,10!=3.6\times 10^6$).
-
 However there is more than one AND gate in general biological networks and those AND gates could be chained \textit{e.g.} \cite{samaga2009logic}, \textit{i.e.} the successors of certain AND gate contain other AND gates.
 We analyze first the simple AND gates $simp$ (without successive AND gates) by traversing its permutations.
-If all elements in $simp$ are reachable, update initial state by firing all the transitions in extracted trajectory \textit{via} (section \ref{sectExtract}), and delete the successors of $simp$, then restart the process from finding simple AND gates.
+If all elements in $simp$ are reachable, update initial state by firing all the transitions and delete the successors of $simp$, then restart the process from finding simple AND gates.
 During the whole process, if an AND gate is not reachable after traversing its permutations, the final goal state is not reachable as the SLCG is linked by logical AND. 
 Otherwise, when the process terminates, there is no AND gate, SLCG is conclusive as there is no cycle or conflict.
 
@@ -434,25 +335,20 @@ Normally 6 realizing orders need checking: $b::c::d$, $b::d::c$, $c::b::d$, $c::
 If we find the order $b::c$ is not realizable when verifying the first realizing order, then we do not have to verify the reachability of $b::c::d$ and $b::d::c$ where $b$ occurs before $c$. $d::b::c$ is not included, because firing $d$ changes its state before firing $b::c$.
 
 
-
-\subsection{Heuristic on OR Gates}\label{sectheuristic}
-In the previous section, without OR gates (one state node has multiple solution successors), reachability problem is solvable in polynomial time \textcolor{red}{ToDO}% even with AND gates if $I=O (1)$ as the reasoning of SLCG is linear with the number of local states.
-
-In general SLCGs, there exist both AND gates and OR gates. 
-Every disjunction may generate a fork in global reasoning, except the cases where global state satisfies all local states in a fork simultaneously and reduce the possibilities of final states and simplifies the computation. If an OR gate is followed by an AND gate, there are multiple initial states for the reasoning of the AND gate, \textit{i.e.} there are multiple sets of permutations to verify, the size of problem multiplies. 
-
-To deal with the concern brought by OR gates, if they are numerous %(say more than 30) 
-to enumerate, general SLCG can be regarded as a decision tree, where we need to make a choice at each OR gate in order to make every involved AND gate take the value 1. 
-
+\subsection{Heuristic on OR gates}\label{sec:OR}
+In the previous section, without OR gates (one state node has multiple solution successors), reachability problem is solvable in polynomial time.
+As every \textbf{OR gate} has multiple choices, to avoid combinatorial explosion, we use a simple heuristic: 
+choose randomly one assignment for each trial.
+Then we can construct a new LCG without \textbf{OR gate}, every state node has exactly one successive solution node.
 In fact, if the desired state is reachable, it is probable that exact solution is found during the trial because there are more than one choice that makes the desired state reachable.
 
 \subsection{Overall Process}\label{sectOverall}
-Combining all the parts in section \ref{sect:4} and trajectory extraction technique in section \ref{algorithm:1}, the whole process of PermReach is shown as follows:
+Combining all the parts, the whole process of PermReach is shown as follows:
 \begin{enumerate}
 \item Precondition initial SLCG, cycles are deleted (Section \ref{sectprecond})
 \item Build decision trees for AND gates and OR gates
 \item Launch the heuristic on OR gates, obtain an SLCG with pure AND gates 
-\item Compute the reachability on AND gates, if reachable, quit; if not, return to step 3 
+\item Tackle ABAN with AND gates, if reachable, quit; if not, return to step 3 
 \end{enumerate}
 
 \section{Implementation and Benchmarks}\label{sect:5}
@@ -485,7 +381,7 @@ In the TCR tests, PermReach gives exactly the same result as Pint did. As for EG
     \hline
     Total tests&\multicolumn{2}{c|}{$2^4\times 4=64$} & \multicolumn{2}{c|}{$2^3\times 5=40$} & \multicolumn{2}{c|}{$2^{13}\times 12=98,304$}\\
     \hline
-    Analyzer  &  Pint       &\textbf{ASPReach}    &  Pint       &\textbf{ASPReach}   &  Pint       &\textbf{ASPReach}             \\
+    Analyzer  &  Pint       &\textbf{PermReach}    &  Pint       &\textbf{PermReach}   &  Pint       &\textbf{PermReach}             \\
     \hline
     Reachable    & 36(56\%)& 38(59\%)   &  \multicolumn{2}{c|}{16(40\%)}  & 64,282(65.4\%)&74,268(75.5\%)\\
     \hline
@@ -502,6 +398,10 @@ Column “Pint” gives the related results on ANs, while column “PermReach”
 \label{tab:2}
 \end{table}
 
+We carried some random tests\footnote{Random ABANs are generated as follows: given the number of transitions, for every transition, the head of the }, with the number of automata varying from $10,20,\ldots,100,200,\ldots,1000$.
+We varied also the density of the transitions (transitions per automaton on average) from 1 to 10.
+Results of small examples are validated by traditional model checker as it always gives exact result.
+
 As seen in the previous results, our heuristic technique is more conclusive than the reasoning of Pint. 
 In the configuration of the heuristic approach, if there are less than 20 OR gates after preprocessing in Section \ref{sectprecond}, the computation will be shifted from heuristic to global search as the size of enumeration is acceptable.
 There are only 11 OR gates in EGFR model, therefore the results are firmly conclusive. 
@@ -512,33 +412,19 @@ To sum up, PermReach has a better time performance than traditional exhaustive m
 \section{Conclusion and future work}\label{sect:6}
 This paper proposes an expressive formalism ABAN to study the reachability problem. 
 The original approach SLCG has limited conclusiveness because static and local reasoning does not simulate all real system dynamics. 
-Due to the complexity of global search, developing a heuristic technique based on sub-states becomes a feasible choice.
+Due to the complexity of global search, developing a heuristic technique based on joint states becomes a feasible choice.
 The heuristic method reproduces the system dynamics by traversing possible orders of transitions. 
 This ``dynamic tentative'' makes it closer to real dynamics than LCG is.
 
 Future work: in the reasoning of AND gates, the computation on permutations is expensive but is still not conclusive enough, see Fig \ref{FigConflictInForks}. 
 To speed up the whole procedure and improve the conclusiveness, we plan to apply SAT (Satisfiability) solvers or Answer Set Programming (ASP) to refine the analysis of transition orders ($\triangleright$) in the same fork and those across forks. 
 In addition, we may contemplate the extension of our heuristic technique to multivalued models.
+
+
+\bibliographystyle{splncs04}
+\bibliography{bib}   % name your BibTeX data base
+
 \appendix
-
-%\section{Random Walks problem}\label{appendix:A}
-%\begin{definition}[Random Walks]
-%Start with an arbitrary natural number $i$, at each time step, the number add or minus 1 with equal probability, how many expected steps $Z_i$ does it take to reach certain goal $n$?
-%\end{definition}
-%Starting from $n$, there is no need to move, thus the expectation of steps $\mathbb {E}[Z_n]=0$; starting from $0$, the only possibility is to move rightwards, $\mathbb {E}[Z_0]=1+\mathbb {E}[Z_1]$. 
-%Similarly, starting from $0<i<n$ we have $$\mathbb {E}[Z_i]=\frac{1}{2} (\mathbb {E}[Z_{i+1}]+1)+\frac{1}{2} (\mathbb {E}[Z_{i-1}+1])$$
-%With these recurrence relations, we can obtain $\mathbb {E}[Z_0]=n^2$ (worst case for $0\leq i\leq n$), \textit{i.e.} it takes $n^2$ steps on average to start from 0 to reach $n$ and less than $n$ if $i>0$. 
-%By applying Markov's inequality $\mathbb {P} (X\geq a)\leq {\frac {\mathbb {E} (X)}{a}}$, with $a=n^2$, we have $\mathbb {P}[Z_0>2n^2]\leq \frac{1}{2}$, the possibility of taking more than $n^2$ steps to reach $n$ is less than a half. 
-%The proof of Markov's inequality is shown as below:
-%\begin{align*}
-%\mathbb {E}[X]&=\sum_{k=0}^{a}k\cdot \mathbb {P}[X=k]+\sum_{k=a+1}^{\infty}k\cdot \mathbb {P}[X=k]\\
-%&\geq 0+2n^2\mathbb {P}[X>a]
-%\Rightarrow \mathbb {P}[X>a]\leq \frac {\mathbb {E} (X)}{a}
-%\end{align*}
-%
-%For one tentative of $2n$ steps, it has at least $\frac{1}{2}$ possibility to reach $n$, if we initiate $\log_2n$ tentatives, we have at least the possibility of $1- (1-\frac{1}{2})^{\log_2n}=1-\frac{1}{n}$ to have at least one tentative reaching the goal $n$.
-%As long as we increase the number of tentatives, the possibility of success will get closer to $1$. 
-
 \section{Algorithm}\label{appendix:B}
 The construction of an SLCG is realized by iterative updates:
 \begin{algorithm}[ht]
@@ -552,7 +438,7 @@ $Ls\gets \{\omega\}$, $\mathbf{LS}\gets\{\omega\}$, $\mathbf{Sol}\gets \varnothi
 			\State $a_i{\rm .next}=sol_{a_i}$
             \State $sol_{a_i}{\rm .next}=\varnothing$
     	\Else
-    		\For{$sol=\acm{A}{a_{\lnot i}}{a_i}\in \mathbf{T}$}
+    		\For{$sol=\acm{A}{a_{1- i}}{a_i}\in \mathbf{T}$}
     			\State $a_i{\rm .next}\gets a_i{\rm .next}\cup sol$
     			\For{$b_j\in A$}
     				\State $sol{\rm .next}\gets b_j$
@@ -571,18 +457,14 @@ $Ls\gets \{\omega\}$, $\mathbf{LS}\gets\{\omega\}$, $\mathbf{Sol}\gets \varnothi
 \end{algorithm}
 \section{Transformation from general BNs to ABANs}\label{appendix:C}
 
-Given Boolean functions $v_i (t+1)=f_i (\mathbf{V}_i)$, with $\mathbf{V}_i$ the set of participating variables among $v_1 (t),\cdots,v_n (t)$.
+Given Boolean functions $v_i(t+1)=f_i(\mathbf{V}_i)$, with $\mathbf{V}_i$ the set of participating variables among $v_1(t),\cdots,v_n(t)$.
 Boolean operators are transformable to the composition of $\lnot,\land,\lor$ (\textit{e.g.} $a\ \mathbf{XOR} \ b = (a\land \lnot b)\lor (\lnot a\land b)$), and Boolean functions possess an equivalent CNF (clausal normal form) thanks to its distributivity.
 As ANs interpret transitions in the way of disjunctions of conjunctions, all BNs are transformable to ANs. 
 We can see that it does not matter whether the dynamics is synchronous or asynchronous, because these transformations are only exerted on functions/transitions.
 
 Example: 
 
-Let $G_B=(V,F)$ a BN with $V=\{a,b,c,d,e\}$, and has only one Boolean function, $F=\{f (a)= (b\lor c)\land (d\lor e)\}$, we have 
-$f (a)= (b\land d)\lor (b\land e)\lor (c\land d)\lor (c\land e)$, and $\lnot f (a)= (\lnot b\land \lnot c)\lor (\lnot d\land \lnot e)$. 
-The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e\}$, with transitions: $\mathbf{T}=\{\acm{\{b_1,d_1\}}{a_0}{a_1},\ \acm{\{b_1,e_1\}}{a_0}{a_1},\ \acm{\{c_1,d_1\}}{a_0}{a_1},\ \acm{\{c_1,e_1\}}{a_0}{a_1},\ \acm{\{b_0,c_0\}}{a_1}{a_0},\ \acm{\{d_0,e_0\}}{a_1}{a_0}\}$.
-
-\bibliographystyle{splncs04}
-\bibliography{bib}   % name your BibTeX data base
-
+Let $G_B=(V,F)$ a BN with $V=\{a,b,c,d,e\}$, and has only one Boolean function, $F=\{f(a)= (b\lor c)\land(d\lor e)\}$, we have 
+$f(a)=(b\land d)\lor(b\land e)\lor(c\land d)\lor(c\land e)$, and $\lnot f(a)=(\lnot b\land \lnot c)\lor(\lnot d\land \lnot e)$. 
+The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e\}$, with transitions: $\mathbf{T}=\{\acm{b_1,d_1}{a_0}{a_1},\ \acm{b_1,e_1}{a_0}{a_1},\ \acm{c_1,d_1}{a_0}{a_1},\ \acm{c_1,e_1}{a_0}{a_1},\ \acm{b_0,c_0}{a_1}{a_0},\ \acm{d_0,e_0}{a_1}{a_0}\}$.
 \end{document}
