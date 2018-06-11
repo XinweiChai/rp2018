@@ -1,4 +1,24 @@
-\begin{tikzpicture}[aS]  
+\begin{minipage}{0.4\textwidth}
+\centering
+\begin{tikzpicture}[apdotsimple/.style={apdot},scale=0.9, every node/.style={scale=0.9}]
+\scriptsize
+\TSort{(0,0)}{a}{2}{l}
+\TSort{(2,0)}{b}{2}{l}
+\TSort{(4,0)}{c}{2}{l}
+
+% with delays
+\path[local transitions]
+
+	(c_0) edge node[auto] {\{$a_1, b_1$\}} (c_1)
+	(a_0) edge node[auto] {\{$b_0$\}} (a_1)
+	(b_0) edge node[auto] {\{$\mathbf{c_0}$\}} (b_1)
+;
+\TState{a_0, b_0, c_0}
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}{0.6\textwidth}
+\centering
+\begin{tikzpicture}[aS,every node/.style={scale=0.9}]  
   	
   	\startl{c_1};
   	\specl{above}{c_1}{a_1};
@@ -8,3 +28,5 @@
 	\link{b_1}{c_0};
   	\edl{c_0};
     \end{tikzpicture}
+
+\end{minipage}
