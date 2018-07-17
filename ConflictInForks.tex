@@ -1,4 +1,4 @@
-\begin{tikzpicture}[aS, every node/.style={scale=0.7}]  
+\begin{tikzpicture}[aS, every node/.style={scale=0.9}]  
   	
 	\startl{a_1};
 	\specl{above}{a_1}{b_1};
@@ -12,4 +12,7 @@
  	\edl{c_0};
  	\specl{below}{c_1}{e_0};
  	\edl{e_0};
+ 	\node[above right = 0.05cm and 0.2cm of a_1s] {\scriptsize AND};
+ 	\node[above right = 0.05cm and 0.2cm of b_1s] {\scriptsize AND};
+ 	\node[below right = -0.05cm and 0.1cm of c_1s] {\scriptsize AND};
     \end{tikzpicture}
