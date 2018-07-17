@@ -1,0 +1,147 @@
+----------------------- REVIEW 2 ---------------------
+PAPER: 12
+TITLE: A Heuristic for Reachability Problem in Asynchronous Binary Automata Networks
+AUTHORS: Xinwei Chai, Morgan Magnin and Olivier Roux
+
+Overall evaluation: 1 (weak accept)
+
+----------- Overall evaluation -----------
+The authors consider networks of binary automata, which consist of a 
+number of simple automata running in parallel.  Each automaton 
+contains only two states (0 or 1) and the behaviour is given by a 
+series of rules which describe which states a subset of the 
+neighboring automata should be in for the automaton to change state.
+
+Such automata are used for the modeling of biological networks, and 
+the authors consider benchmarks for which traditional model-checkers 
+struggle to answer a defined reachability problem.
+
+To overcome this issue, an incomplete approach is proposed.  From the 
+reachability problem, a causality graph is constructed which gives some 
+kind of representation of possible traces witnessing reachability.  
+This representation contains AND and OR gates.  The proposed technique 
+first makes up to k random resolutions of the OR gates.  The induced 
+subproblems contain only AND gates which roughly denote which 
+transitions should appear.  A linearisation of the represented trace 
+is searched for exhaustively.
+
+This heuristic has been implemented and shown to perform well on the 
+considered benchmarks, for which existing tools time out.  The 
+benchmarks contain no instances of the loss of precision affecting the 
+result.
+
+The paper is experimental in nature and proposes what looks to be a 
+reasonable technique.  Thus I think it could be accepted to RP.
+
+My main criticism of the paper is that the techniques are not so 
+advanced.  To remove the OR gates, the use of a fixed number of random 
+guesses is not ideal.  The authors claim in one algorithm that a 
+negative answer means "probably not reachable".  This is a claim that 
+needs to be argued more rigorously since such a small part of the 
+search space is explored.  A more advanced solution may have 
+considered integration with SMT solvers, which take care of the OR 
+elimination in a more principled way, with access to all the trickery 
+of SAT solvers.
+
+Similarly, the AND gates are eliminated using simple enumeration of 
+all permutations.  I suspect something such as a toposort could at 
+least be used to limit the number of obviously infeasible permutations
+considered.
+
+Hence, I recommend a weak accept.  The work could appear at RP, but 
+could also have explored potential optimizations to a deeper degree.
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 12
+TITLE: A Heuristic for Reachability Problem in Asynchronous Binary Automata Networks
+AUTHORS: Xinwei Chai, Morgan Magnin and Olivier Roux
+
+Overall evaluation: -2 (reject)
+
+----------- Overall evaluation -----------
+The authors consider Asynchronous Binary Automata Networks (ABAN), a
+model quite popular in systems biology. The problem they tackle on
+these networks is reachability of global or local states. The authors
+build on previous work by two of the authors with other collaborators,
+namely on the local causality graph (LCG), which can be seen as an
+abstraction of the real behaviour or the network, based on static
+analysis. Since the LCG method is incomplete, in the current
+contribution, the authors propose a heuristic to cover some of the
+instances for which the LCG is inconclusive.
+
+First, rather than an over-approximation, and an under-approximation,
+the authors propose the simplified LCG (SLCG). Not being familiar with
+the LCG construction, it is hard for me to compare the two objects. It
+seems that the SLCG is neither sound nor complete: it provides an
+approximation of the reachability problem, which is neither an
+over-approximation, nor an under-approximation. As soon as SLCG
+contains cycles, or OR gates, it does not characterize
+reachability. Thus, the authors propose in a second step to transform
+the SLCG to remove cycles and OR gates. The observations are the
+following: 1) Cycles can be removed, while preserving reachability,
+assuming they have at most one incoming edge; 2) if a cycle contains
+no OR gate, all its local states are unreachable; 3) OR gates can be
+removed by randomly choosing which alternative will be true. When
+possible, the resulting SLCG with AND gates only and no cycles can be
+analysed by enumerating all permutations of transitions leading to the
+desired target global state. The methodology has been implemented in
+Python, and tested on benchmarks from the literature. These
+experiments are promising: they show that the proposed methodology is
+more conclusive and faster than the one based on LCG.
+
+The underlying ideas of the present contribution seem particularly
+simple. Theoretically speaking, the contribution is limited. Perhaps
+more importantly for now, the paper is, in my opinion, not ready for
+publication. There are numerous typos; many sentences are sloppy;
+statements are unprecise. Although the topic could be interesting for
+RP, I propose to reject this submission.
+
+
+Detailed comments
+
+- "and SAT solvers based on OBDDs and SAT solvers". Please rephrase.
+
+- "a <- 0 when b=0 at moment t". Here, you mean that a is set fo 0 at
+  moment t+1. It might be a good idea to use a[t+1 and b[t], or some
+  other appropriate notation to reflect this.
+
+- "this property makes ABAN more extendable": What do you mean here?
+
+- When reading definition 1, it is not clear what the subset of
+  automata Sigma' will be used for. Please comment right after the
+  definition, or remove if unnecessary.
+
+- In Definition 5, what is sol_{a_i}. More generally, please introduce
+  all notations you use in the paper.
+
+- "A recursive reasoning of reachability": Please rephrase.
+
+- "without solution successor": Please rephrase.
+
+- "Firing order constraints (short for constraints)": I do not get
+  what you mean here. Is "contraints" what you use in place of "firing
+  order constraints" for short?
+
+- "In biological background": Please rephrase.
+
+- "by the search in permutations": Please rephrase.
+
+- The pseudo code in section 4.1 must be improved to be closer to real
+  code. For example "back to step" could be a goto statement.
+
+- The statement of Theorem 1 is not formal enough. Of course cycles
+  can always be removed from SLCG. But what is preserved when doing
+  so? reach(alpha,omega)? r'(alpha,omega)?
+
+- What is alpha in Example 5? Does it matter?
+
+- "x is already to be reached": Please rephrase.
+
+- "the order reaching the members in a joint state": Here also please
+  rephrase.
+
+- "but is not necessarily for the joint states s". Please rephrase.
+
+- The definition of the notation Perm(s) should not be part of
+  Proposition 1.
